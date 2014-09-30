@@ -1,15 +1,26 @@
 package team6.cs121.bulletinboard;
 
+import android.app.Activity;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.example.marina.bulletin_board.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by alobb on 9/28/14.
  */
-public class BulletinBoard {
+public class BulletinBoard extends Activity{
 
     private String name;
     private List<Note> notes;
+
+    Button add_note_button;
 
 
     /**
@@ -39,4 +50,18 @@ public class BulletinBoard {
     public Note getNote(int index) {
         return this.notes.get(index);
     }
+
+    public void onClick(View view) {
+        int id = view.getId();
+        if (id == R.id.add_note_button) {
+            TextView newText = (TextView) findViewById(R.id.note_creation_area);
+            String text = (String) newText.getText();
+            Note newNote = new Note(text);
+            this.notes.add(newNote);
+
+        }
+
+
+    }
+
 }

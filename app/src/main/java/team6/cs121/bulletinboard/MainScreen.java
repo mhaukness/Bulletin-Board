@@ -4,14 +4,42 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+
+import com.example.marina.bulletin_board.R;
+
+import java.util.List;
 
 
-public class MainScreen extends Activity {
+public class MainScreen extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
+
+    Button add_note_button;
+    ListView note_listview;
+
+    //List<BulletinBoard> boards;
+    BulletinBoard personalBoard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+
+
+        // Access the Button defined in layout XML
+        // and listen for it here
+        add_note_button = (Button) findViewById(R.id.add_note_button);
+        add_note_button.setOnClickListener(this);
+
+
+        // Access the ListView
+        note_listview = (ListView) findViewById(R.id.note_listview);
+        // Set this activity to react to list items being pressed
+        note_listview.setOnItemClickListener(this);
+
+        personalBoard = new BulletinBoard("Personal Board");
     }
 
 
@@ -32,5 +60,22 @@ public class MainScreen extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        if (id == R.id.add_note_button) {
+            //create new note layout
+            // get text user enters
+            // create new note
+        }
+
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
     }
 }
