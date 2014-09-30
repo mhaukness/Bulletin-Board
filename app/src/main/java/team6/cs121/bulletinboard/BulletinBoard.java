@@ -2,12 +2,13 @@ package team6.cs121.bulletinboard;
 
 import android.app.Activity;
 
+import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.marina.bulletin_board.R;
+import team6.cs121.bulletinboard.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +55,11 @@ public class BulletinBoard extends Activity{
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.add_note_button) {
-            TextView newText = (TextView) findViewById(R.id.note_creation_area);
-            String text = (String) newText.getText();
-            Note newNote = new Note(text);
+            EditText newText = (EditText) findViewById(R.id.note_creation_area);
+            Editable text = newText.getText();
+            Note newNote = new Note(text.toString());
             this.notes.add(newNote);
+            newText.setText("");
 
         }
 

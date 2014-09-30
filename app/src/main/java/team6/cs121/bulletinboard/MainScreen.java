@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.marina.bulletin_board.R;
+import team6.cs121.bulletinboard.R;
 
 import java.util.List;
 

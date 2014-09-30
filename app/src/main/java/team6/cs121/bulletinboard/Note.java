@@ -3,7 +3,7 @@ package team6.cs121.bulletinboard;
 import android.app.Activity;
 import android.widget.TextView;
 
-import com.example.marina.bulletin_board.R;
+import team6.cs121.bulletinboard.R;
 
 /**
  * Created by alobb on 9/28/14.
