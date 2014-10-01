@@ -1,16 +1,11 @@
 package team6.cs121.bulletinboard;
 
-import android.app.Activity;
-import android.widget.TextView;
-
-import team6.cs121.bulletinboard.R;
+import java.io.Serializable;
 
 /**
  * Created by alobb on 9/28/14.
  */
-public class Note extends Activity {
-
-    TextView textView;
+public class Note implements Serializable {
 
     private String text;
     // add some sort of id eventually
@@ -23,20 +18,29 @@ public class Note extends Activity {
      */
     public Note() {
         this.text = "";
-        textView = (TextView) findViewById(R.id.note_textview);
-        textView.setText(this.text);
     }
 
-    /**e
-     * Create a new Note
-     * @param new_text
+
+    /**
+     *
+     * @param text
      */
-    public Note(String new_text) {
-        this.text = new_text;
-        textView = (TextView) findViewById(R.id.note_textview);
-        textView.setText(this.text);
+    public Note(String text) {
+        this.text = text;
     }
 
 
+    public String getText() {
+        return this.text;
+    }
+
+
+    /**
+     *
+     * @param newText
+     */
+    public void editText(String newText) {
+        this.text = newText;
+    }
 
 }

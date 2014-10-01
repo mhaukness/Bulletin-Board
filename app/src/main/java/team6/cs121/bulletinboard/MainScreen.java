@@ -1,45 +1,77 @@
 package team6.cs121.bulletinboard;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
-import team6.cs121.bulletinboard.R;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
-import java.util.List;
 
+public class MainScreen extends Activity {
 
-public class MainScreen extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
+    private Button addNote;
+    private ListView noteList;
+    private EditText newNoteText;
+    private BulletinBoard personalBoard;
+    private NoteAdapter adapter;
+    private final String FILE_NAME = "personalBoard";
 
-    Button add_note_button;
-    ListView note_listview;
-
-    //List<BulletinBoard> boards;
-    BulletinBoard personalBoard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
+        this.newNoteText = (EditText) findViewById(R.id.newNoteText);
+        this.noteList = (ListView) findViewById(R.id.note_listview);
+        this.addNote = (Button) findViewById(R.id.createNote);
+        this.addNote.setOnClickListener(clickListener);
+    }
 
-        // Access the Button defined in layout XML
-        // and listen for it here
-        add_note_button = (Button) findViewById(R.id.add_note_button);
-        add_note_button.setOnClickListener(this);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initBoard();
+        adapter = new NoteAdapter(this, R.layout.note, personalBoard.getAllNotes());
+        this.noteList.setAdapter(adapter);
+    }
 
+    private void initBoard() {
+        File file = new File(this.getFilesDir(), FILE_NAME);
+        if(file.exists()) {
+            FileInputStream fis = null;
+            try {
+                fis = this.openFileInput(FILE_NAME);
+                this.personalBoard = BulletinBoard.deserialize(fis);
+            } catch (java.io.IOException e) {
+                Log.e("ERROR", e.getMessage(), e);
+            } catch (ClassNotFoundException e) {
+                Log.e("ERROR", e.getMessage(), e);
+            }
+        } else {
+            this.personalBoard = new BulletinBoard("Personal Board");
+        }
+    }
 
-        // Access the ListView
-        note_listview = (ListView) findViewById(R.id.note_listview);
-        // Set this activity to react to list items being pressed
-        note_listview.setOnItemClickListener(this);
-
-        personalBoard = new BulletinBoard("Personal Board");
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+            fos.write(BulletinBoard.serialize(this.personalBoard));
+            fos.close();
+        } catch (java.io.IOException e) {
+            Log.e("ERROR", e.getMessage(), e);
+        }
     }
 
 
@@ -62,20 +94,26 @@ public class MainScreen extends Activity implements View.OnClickListener, Adapte
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
-        if (id == R.id.add_note_button) {
-            //create new note layout
-            // get text user enters
-            // create new note
+
+    private final View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.createNote:
+                    createNote();
+                    break;
+            }
         }
+    };
 
 
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+    /**
+     *
+     */
+    private void createNote() {
+        Note note = new Note(this.newNoteText.getText().toString());
+        this.personalBoard.addNote(note);
+        this.newNoteText.setText("");
+        this.adapter.notifyDataSetChanged();
     }
 }
