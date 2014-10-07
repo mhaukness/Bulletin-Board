@@ -1,6 +1,5 @@
 package team6.cs121.bulletinboard;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -8,12 +7,11 @@ import android.widget.AdapterView;
 /**
  * Created by alobb on 9/30/14.
  */
-public class BulletinBoardClickListener implements AdapterView.OnItemClickListener {
+public class BulletinBoardClickListener implements AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener {
 
     private BulletinBoard board;
     private NoteModifier activity;
-
-
 
     /**
      *
@@ -33,5 +31,11 @@ public class BulletinBoardClickListener implements AdapterView.OnItemClickListen
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         this.activity.removeNote(position);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        this.activity.editNote(position);
+        return false;
     }
 }

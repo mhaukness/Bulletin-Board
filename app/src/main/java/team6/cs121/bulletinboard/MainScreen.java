@@ -2,6 +2,7 @@ package team6.cs121.bulletinboard;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -37,7 +38,6 @@ public class MainScreen extends Activity implements NoteModifier {
     };
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,9 +47,11 @@ public class MainScreen extends Activity implements NoteModifier {
         this.noteList = (ListView) findViewById(R.id.note_listview);
         this.bulletinBoardClick = new BulletinBoardClickListener(this.personalBoard, this);
         this.noteList.setOnItemClickListener(this.bulletinBoardClick);
+        this.noteList.setOnItemLongClickListener(this.bulletinBoardClick);
         this.addNote = (Button) findViewById(R.id.createNote);
         this.addNote.setOnClickListener(this.clickListener);
     }
+
 
     @Override
     protected void onStart() {
@@ -59,6 +61,10 @@ public class MainScreen extends Activity implements NoteModifier {
         this.noteList.setAdapter(adapter);
     }
 
+
+    /**
+     *
+     */
     private void initBoard() {
         File file = new File(this.getFilesDir(), FILE_NAME);
         if(file.exists()) {
@@ -75,6 +81,7 @@ public class MainScreen extends Activity implements NoteModifier {
             this.personalBoard = new BulletinBoard("Personal Board");
         }
     }
+
 
     @Override
     protected void onStop() {
@@ -119,9 +126,19 @@ public class MainScreen extends Activity implements NoteModifier {
         this.adapter.notifyDataSetChanged();
     }
 
-    
+
     @Override
     public void removeNote(int index) {
+        this.personalBoard.removeNote(index);
+        this.adapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    public void editNote(int index) {
+        Intent i = new Intent(this, EditNote.class);
+        i.putExtra(NoteModifier.NOTE_VALUE, this.personalBoard.getNote(index));
+        startActivity(i);
         this.personalBoard.removeNote(index);
         this.adapter.notifyDataSetChanged();
     }

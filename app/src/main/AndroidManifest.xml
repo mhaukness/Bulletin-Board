@@ -28,6 +28,15 @@
         </activity>
 
         <activity
+            android:name=".EditNote"
+            android:label="EditNote"
+            android:parentActivityName=".MainScreen">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+
+        <activity
             android:name=".Note"
             android:label="Note"
             android:parentActivityName=".BulletinBoard">
