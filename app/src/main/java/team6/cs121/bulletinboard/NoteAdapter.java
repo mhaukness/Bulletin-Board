@@ -41,12 +41,12 @@ public class NoteAdapter extends ArrayAdapter<Note> {
     }
 
     @Override
-    public long getItemId (int position) {
+    public long getItemId(int position) {
         return position;
     }
 
     @Override
-    public Note getItem (int position) {
+    public Note getItem(int position) {
         return values.get(position);
     }
 

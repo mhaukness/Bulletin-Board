@@ -82,4 +82,13 @@ public class BulletinBoard implements Serializable {
         return  this.notes;
     }
 
+
+    /**
+     *
+     * @param index
+     */
+    public void removeNote(int index) {
+        this.notes.remove(index);
+    }
+
 }

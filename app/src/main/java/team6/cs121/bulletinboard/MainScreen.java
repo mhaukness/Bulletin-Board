@@ -16,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 
-public class MainScreen extends Activity {
+public class MainScreen extends Activity implements NoteModifier {
 
     private Button addNote;
     private ListView noteList;
@@ -24,6 +24,18 @@ public class MainScreen extends Activity {
     private BulletinBoard personalBoard;
     private NoteAdapter adapter;
     private final String FILE_NAME = "personalBoard";
+    private BulletinBoardClickListener bulletinBoardClick;
+    private final View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.createNote:
+                    createNote();
+                    break;
+            }
+        }
+    };
+
 
 
     @Override
@@ -33,8 +45,10 @@ public class MainScreen extends Activity {
 
         this.newNoteText = (EditText) findViewById(R.id.newNoteText);
         this.noteList = (ListView) findViewById(R.id.note_listview);
+        this.bulletinBoardClick = new BulletinBoardClickListener(this.personalBoard, this);
+        this.noteList.setOnItemClickListener(this.bulletinBoardClick);
         this.addNote = (Button) findViewById(R.id.createNote);
-        this.addNote.setOnClickListener(clickListener);
+        this.addNote.setOnClickListener(this.clickListener);
     }
 
     @Override
@@ -95,18 +109,6 @@ public class MainScreen extends Activity {
     }
 
 
-    private final View.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.createNote:
-                    createNote();
-                    break;
-            }
-        }
-    };
-
-
     /**
      *
      */
@@ -114,6 +116,13 @@ public class MainScreen extends Activity {
         Note note = new Note(this.newNoteText.getText().toString());
         this.personalBoard.addNote(note);
         this.newNoteText.setText("");
+        this.adapter.notifyDataSetChanged();
+    }
+
+    
+    @Override
+    public void removeNote(int index) {
+        this.personalBoard.removeNote(index);
         this.adapter.notifyDataSetChanged();
     }
 }
