@@ -21,7 +21,6 @@ public class NoteClickListener implements View.OnClickListener {
                 activity.removeNote(index);
                 break;
             case R.id.note_textview:
-            case R.id.noteView:
                 activity.editNote(index);
                 break;
         }

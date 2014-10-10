@@ -44,7 +44,8 @@ public class MainScreen extends Activity implements NoteModifier {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
-        Parse.initialize(this, "zLVIHD2pn243N9DhZFqDGXQrYRtqpjOqUCq1nKqq", "IrVmsoQqhycibo4TNGGG36vZ8k9rrorWoaZpsdCU");
+        Parse.initialize(this, "zLVIHD2pn243N9DhZFqDGXQrYRtqpjOqUCq1nKqq",
+                "IrVmsoQqhycibo4TNGGG36vZ8k9rrorWoaZpsdCU");
 
 
         initBoard();
@@ -58,11 +59,12 @@ public class MainScreen extends Activity implements NoteModifier {
 
 
     /**
-     *
+     * Initializes the bulletin board by attempting to load a file that contains the data for the
+     * personal bulletin board.  If it cannot find the file, it will create a blank board.
      */
     private void initBoard() {
         File file = new File(this.getFilesDir(), FILE_NAME);
-        if(file.exists()) {
+        if (file.exists()) {
             FileInputStream fis = null;
             try {
                 fis = this.openFileInput(FILE_NAME);
@@ -88,26 +90,6 @@ public class MainScreen extends Activity implements NoteModifier {
         } catch (java.io.IOException e) {
             Log.e("ERROR", e.getMessage(), e);
         }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_screen, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -154,5 +136,28 @@ public class MainScreen extends Activity implements NoteModifier {
                 }
             }
         }
+    }
+
+
+    /////////////////////////////
+    // Android Boilerplate
+    /////////////////////////////
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_screen, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

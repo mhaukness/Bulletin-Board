@@ -8,8 +8,6 @@ import java.io.Serializable;
 public class Note implements Serializable {
 
     private String text;
-    // add some sort of id eventually
-    //private String id;
 
 
     /**e
