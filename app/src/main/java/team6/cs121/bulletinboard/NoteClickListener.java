@@ -15,10 +15,14 @@ public class NoteClickListener implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Integer index = (Integer) v.getTag();
         switch (v.getId()) {
             case R.id.delete_button:
-                Integer index = (Integer) v.getTag();
                 activity.removeNote(index);
+                break;
+            case R.id.note_textview:
+            case R.id.noteView:
+                activity.editNote(index);
                 break;
         }
     }

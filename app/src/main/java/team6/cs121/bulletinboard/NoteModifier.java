@@ -5,6 +5,7 @@ package team6.cs121.bulletinboard;
  */
 public interface NoteModifier {
     public static String NOTE_VALUE = "NOTE_VALUE";
+    public static String NOTE_INDEX = "NOTE_INDEX";
 
     public void removeNote(int index);
 

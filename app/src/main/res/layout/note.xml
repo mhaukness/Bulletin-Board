@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:id="@+id/noteView">
+    android:id="@+id/noteView"
+    android:orientation="horizontal">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight=".80"
         android:layout_height="wrap_content"
-        android:hint="Enter text"
-        android:text=""
+        android:textSize="32sp"
+        android:text="Placeholder"
         android:id="@+id/note_textview"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentStart="true" />
 
     <Button
         android:id="@+id/delete_button"
-        android:layout_width="wrap_content"
+        android:layout_weight=".15"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
         android:text="X" />
 
-</RelativeLayout>
+</LinearLayout>

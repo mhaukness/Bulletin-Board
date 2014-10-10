@@ -43,14 +43,18 @@ public class NoteAdapter extends ArrayAdapter<Note> {
             rowView = convertView;
         }
         final ViewHolder viewHolder = new ViewHolder();
+        NoteClickListener clickListener = new NoteClickListener(this.activity);
+
         viewHolder.text = (TextView) rowView.findViewById(R.id.note_textview);
         viewHolder.text.setText(this.values.get(position).getText());
-        viewHolder.deleteButton = (Button) rowView.findViewById(R.id.delete_button);
-        viewHolder.deleteButton.setOnClickListener(new NoteClickListener(this.activity));
+        viewHolder.text.setOnClickListener(clickListener);
+        viewHolder.text.setTag(position);
 
-        rowView.setTag(viewHolder);
+        viewHolder.deleteButton = (Button) rowView.findViewById(R.id.delete_button);
+        viewHolder.deleteButton.setOnClickListener(clickListener);
         viewHolder.deleteButton.setTag(position);
 
+        rowView.setTag(viewHolder);
         return rowView;
     }
 

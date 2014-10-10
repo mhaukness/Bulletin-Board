@@ -37,6 +37,7 @@ public class MainScreen extends Activity implements NoteModifier {
             }
         }
     };
+    private static final int EDIT_NOTE = 1;
 
 
     @Override
@@ -46,19 +47,13 @@ public class MainScreen extends Activity implements NoteModifier {
         Parse.initialize(this, "zLVIHD2pn243N9DhZFqDGXQrYRtqpjOqUCq1nKqq", "IrVmsoQqhycibo4TNGGG36vZ8k9rrorWoaZpsdCU");
 
 
-        this.newNoteText = (EditText) findViewById(R.id.newNoteText);
-        this.noteList = (ListView) findViewById(R.id.note_listview);
-        this.addNote = (Button) findViewById(R.id.createNote);
-        this.addNote.setOnClickListener(this.clickListener);
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         initBoard();
         adapter = new NoteAdapter(this, R.layout.note, personalBoard.getAllNotes());
+        this.newNoteText = (EditText) findViewById(R.id.newNoteText);
+        this.noteList = (ListView) findViewById(R.id.note_listview);
         this.noteList.setAdapter(adapter);
+        this.addNote = (Button) findViewById(R.id.createNote);
+        this.addNote.setOnClickListener(this.clickListener);
     }
 
 
@@ -120,10 +115,13 @@ public class MainScreen extends Activity implements NoteModifier {
      *
      */
     private void createNote() {
-        Note note = new Note(this.newNoteText.getText().toString());
-        this.personalBoard.addNote(note);
-        this.newNoteText.setText("");
-        this.adapter.notifyDataSetChanged();
+        String text = this.newNoteText.getText().toString();
+        if (!text.isEmpty()) {
+            Note note = new Note(this.newNoteText.getText().toString());
+            this.personalBoard.addNote(note);
+            this.newNoteText.setText("");
+            this.adapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -138,8 +136,23 @@ public class MainScreen extends Activity implements NoteModifier {
     public void editNote(int index) {
         Intent i = new Intent(this, EditNote.class);
         i.putExtra(NoteModifier.NOTE_VALUE, this.personalBoard.getNote(index));
-        startActivity(i);
-        this.personalBoard.removeNote(index);
-        this.adapter.notifyDataSetChanged();
+        i.putExtra(NoteModifier.NOTE_INDEX, index);
+        startActivityForResult(i, EDIT_NOTE);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == EDIT_NOTE) {
+            if (resultCode == RESULT_OK) {
+                int index = data.getIntExtra(NoteModifier.NOTE_INDEX, -1);
+                if (index != -1) {
+                    Note note = this.personalBoard.getNote(index);
+                    String newText = data.getStringExtra(NoteModifier.NOTE_VALUE);
+                    note.editText(newText);
+                    this.adapter.notifyDataSetChanged();
+                }
+            }
+        }
     }
 }

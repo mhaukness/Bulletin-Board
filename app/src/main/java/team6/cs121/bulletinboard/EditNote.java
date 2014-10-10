@@ -1,9 +1,12 @@
 package team6.cs121.bulletinboard;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 /**
@@ -12,6 +15,15 @@ import android.widget.EditText;
 public class EditNote extends Activity {
 
     private EditText note;
+    private Button finished;
+    private View.OnClickListener finishedListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            returnData();
+        }
+    };
+    private int index;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,10 +34,29 @@ public class EditNote extends Activity {
         if (extras != null) {
             Note editNote = (Note) extras.getSerializable(NoteModifier.NOTE_VALUE);
             text = editNote.getText();
+            this.index = extras.getInt(NoteModifier.NOTE_INDEX);
         }
 
         this.note = (EditText) findViewById(R.id.note);
         this.note.setText(text);
+        this.finished = (Button) findViewById(R.id.finish);
+        this.finished.setOnClickListener(finishedListener);
+    }
+
+
+    /**
+     *
+     */
+    private void returnData() {
+        Intent data = new Intent();
+        data.putExtra(NoteModifier.NOTE_VALUE, this.note.getText().toString());
+        data.putExtra(NoteModifier.NOTE_INDEX, this.index);
+        if (getParent() == null) {
+            setResult(Activity.RESULT_OK, data);
+        } else {
+            getParent().setResult(Activity.RESULT_OK, data);
+        }
+        finish();
     }
 
 
