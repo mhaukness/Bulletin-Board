@@ -39,6 +39,7 @@ public class EditNote extends Activity {
 
         this.note = (EditText) findViewById(R.id.note);
         this.note.setText(text);
+        this.note.setSelection(this.note.getText().length());
         this.finished = (Button) findViewById(R.id.finish);
         this.finished.setOnClickListener(finishedListener);
     }
