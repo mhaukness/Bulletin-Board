@@ -2,11 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="team6.cs121.bulletinboard" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        >
         <activity
             android:name=".MainScreen"
             android:label="@string/app_name"
@@ -19,15 +23,6 @@
         </activity>
 
         <activity
-            android:name=".BulletinBoard"
-            android:label="Bulletin Board"
-            android:parentActivityName=".MainScreen">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
-        </activity>
-
-        <activity
             android:name=".EditNote"
             android:label="EditNote"
             android:parentActivityName=".MainScreen">
@@ -35,17 +30,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
-
-        <activity
-            android:name=".Note"
-            android:label="Note"
-            android:parentActivityName=".BulletinBoard">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
-        </activity>
-
-
     </application>
 
 </manifest>

@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.parse.Parse;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,7 +27,6 @@ public class MainScreen extends Activity implements NoteModifier {
     private BulletinBoard personalBoard;
     private NoteAdapter adapter;
     private final String FILE_NAME = "personalBoard";
-    private BulletinBoardClickListener bulletinBoardClick;
     private final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -42,12 +43,11 @@ public class MainScreen extends Activity implements NoteModifier {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+        Parse.initialize(this, "zLVIHD2pn243N9DhZFqDGXQrYRtqpjOqUCq1nKqq", "IrVmsoQqhycibo4TNGGG36vZ8k9rrorWoaZpsdCU");
+
 
         this.newNoteText = (EditText) findViewById(R.id.newNoteText);
         this.noteList = (ListView) findViewById(R.id.note_listview);
-        this.bulletinBoardClick = new BulletinBoardClickListener(this.personalBoard, this);
-        this.noteList.setOnItemClickListener(this.bulletinBoardClick);
-        this.noteList.setOnItemLongClickListener(this.bulletinBoardClick);
         this.addNote = (Button) findViewById(R.id.createNote);
         this.addNote.setOnClickListener(this.clickListener);
     }
