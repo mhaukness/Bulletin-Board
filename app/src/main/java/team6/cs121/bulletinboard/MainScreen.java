@@ -17,6 +17,7 @@ import com.parse.Parse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -63,6 +64,7 @@ public class MainScreen extends Activity implements NoteModifier {
         this.addNote = (Button) findViewById(R.id.createNote);
         this.addNote.setOnClickListener(this.clickListener);
 
+        this.boardList = (ListView) findViewById(R.id.board_listview);
         boardAdapter = new BoardAdapter(this, R.layout.board, boards);
         this.boardList.setAdapter(boardAdapter);
     }
@@ -73,6 +75,7 @@ public class MainScreen extends Activity implements NoteModifier {
      * personal bulletin board.  If it cannot find the file, it will create a blank board.
      */
     private void initBoard() {
+        this.boards = new ArrayList<BulletinBoard>();
         File file = new File(this.getFilesDir(), FILE_NAME);
         if (file.exists()) {
             FileInputStream fis = null;
