@@ -14,6 +14,7 @@ public class GroupBoardController extends BoardController {
         String name = "";
         if (extras != null) {
             name = extras.getString(BulletinBoard.BOARD_NAME);
+            setTitle(name);
         }
         this.currentBoard = new BulletinBoard(name);
         super.onCreate(savedInstanceState);

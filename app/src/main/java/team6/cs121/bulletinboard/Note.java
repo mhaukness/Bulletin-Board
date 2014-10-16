@@ -1,13 +1,15 @@
 package team6.cs121.bulletinboard;
 
-import java.io.Serializable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by alobb on 9/28/14.
  */
-public class Note implements Serializable {
+public class Note {
 
     private String text;
+    private static final String NOTE_VALUE = "text";
 
 
     /**e
@@ -41,4 +43,15 @@ public class Note implements Serializable {
         this.text = newText;
     }
 
+
+    public static Note createFromJSON(JSONObject noteObject) throws JSONException {
+        Note note = new Note(noteObject.getString(NOTE_VALUE));
+        return note;
+    }
+
+    public static JSONObject writeToJSON(Note note) throws JSONException {
+        JSONObject jsonNote = new JSONObject();
+        jsonNote.put(NOTE_VALUE, note.getText());
+        return jsonNote;
+    }
 }

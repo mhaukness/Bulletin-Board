@@ -79,7 +79,7 @@ public class BulletinBoard {
         BulletinBoard board = new BulletinBoard(boardArray.getString(BOARD_NAME));
         JSONArray noteArray = boardArray.getJSONArray(NOTE_KEY);
         for (int i = 0; i < noteArray.length(); ++i) {
-            Note note = new Note(noteArray.getString(i));
+            Note note = Note.createFromJSON(noteArray.getJSONObject(i));
             board.addNote(note);
         }
         return board;
@@ -90,7 +90,8 @@ public class BulletinBoard {
         List<Note> notes = currentBoard.getAllNotes();
         JSONArray noteArray = new JSONArray();
         for (int i = 0; i < notes.size(); ++i) {
-            noteArray.put(i, notes.get(i).getText());
+            JSONObject jsonNote = Note.writeToJSON(notes.get(i));
+            noteArray.put(i, jsonNote);
         }
         personalBoard.put(NOTE_KEY, noteArray);
         personalBoard.put(BOARD_NAME, currentBoard.getName());

@@ -14,7 +14,7 @@
         android:id="@+id/createNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create new note" />
+        android:text="Create New Note" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
         android:id="@+id/createBoard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create new note" />
+        android:text="Create New Board" />
 
     <EditText
         android:layout_width="wrap_content"

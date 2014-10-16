@@ -3,11 +3,15 @@ package team6.cs121.bulletinboard;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by alobb on 10/7/14.
@@ -32,7 +36,13 @@ public class EditNote extends Activity {
         Bundle extras = getIntent().getExtras();
         String text = "";
         if (extras != null) {
-            Note editNote = (Note) extras.getSerializable(NoteModifier.NOTE_VALUE);
+            Note editNote = null;
+            try {
+                editNote =  Note.createFromJSON(new JSONObject(extras.getString(NoteModifier.NOTE_VALUE)));
+            } catch (JSONException e) {
+                Log.e("ERROR", e.getMessage(), e);
+                returnData();
+            }
             text = editNote.getText();
             this.index = extras.getInt(NoteModifier.NOTE_INDEX);
         }

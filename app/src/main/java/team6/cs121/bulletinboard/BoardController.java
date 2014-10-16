@@ -3,6 +3,7 @@ package team6.cs121.bulletinboard;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 import com.parse.Parse;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ public abstract class BoardController extends Activity implements NoteModifier {
     private ListView boardList;
     private List<BulletinBoard> boards;
     private EditText newNoteText;
+    private EditText newBoardText;
     protected BulletinBoard currentBoard;
     private NoteAdapter noteAdapter;
     protected final String FILE_NAME = "currentBoard";
@@ -68,8 +71,8 @@ public abstract class BoardController extends Activity implements NoteModifier {
         if (!title.getText().toString().isEmpty()) {
             Intent i = new Intent(this,GroupBoardController.class);
             i.putExtra(BulletinBoard.BOARD_NAME, title.getText().toString());
-            title.setText("");
             startActivity(i);
+            title.setText("");
         }
     }
 
@@ -96,7 +99,12 @@ public abstract class BoardController extends Activity implements NoteModifier {
 
     public void editNote(int index) {
         Intent i = new Intent(this, EditNote.class);
-        i.putExtra(NoteModifier.NOTE_VALUE, this.currentBoard.getNote(index));
+        try {
+            i.putExtra(NoteModifier.NOTE_VALUE, Note.writeToJSON(this.currentBoard.getNote(index)).toString());
+        } catch (JSONException e) {
+            Log.e("ERROR", e.getMessage(), e);
+            return;
+        }
         i.putExtra(NoteModifier.NOTE_INDEX, index);
         startActivityForResult(i, EDIT_NOTE);
     }
