@@ -1,22 +1,21 @@
 package team6.cs121.bulletinboard;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by alobb on 9/28/14.
  */
-public class BulletinBoard implements Serializable {
+public class BulletinBoard {
 
     private String name;
     private List<Note> notes;
+    public static final String NOTE_KEY = "notes";
+    public static final String BOARD_NAME = "boardName";
 
 
     /**
@@ -26,23 +25,6 @@ public class BulletinBoard implements Serializable {
     public BulletinBoard(String name) {
         this.notes = new ArrayList<Note>();
         this.name = name;
-    }
-
-
-    public static byte[] serialize(BulletinBoard bulletinBoard) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(bulletinBoard);
-        os.close();
-        return out.toByteArray();
-    }
-
-    public static BulletinBoard deserialize(InputStream data) throws IOException, ClassNotFoundException {
-        int objDataLen = data.available();
-        byte[] objData = new byte[objDataLen];
-        data.read(objData);
-        ObjectInputStream oin = new ObjectInputStream(new ByteArrayInputStream(objData));
-        return (BulletinBoard) oin.readObject();
     }
 
 
@@ -79,7 +61,7 @@ public class BulletinBoard implements Serializable {
      * @return
      */
     public List<Note> getAllNotes() {
-        return  this.notes;
+        return this.notes;
     }
 
 
@@ -91,4 +73,27 @@ public class BulletinBoard implements Serializable {
         this.notes.remove(index);
     }
 
+
+
+    public static BulletinBoard createFromJSON(JSONObject boardArray) throws JSONException {
+        BulletinBoard board = new BulletinBoard(boardArray.getString(BOARD_NAME));
+        JSONArray noteArray = boardArray.getJSONArray(NOTE_KEY);
+        for (int i = 0; i < noteArray.length(); ++i) {
+            Note note = new Note(noteArray.getString(i));
+            board.addNote(note);
+        }
+        return board;
+    }
+
+    public static JSONObject writeToJSON(BulletinBoard currentBoard) throws JSONException {
+        JSONObject personalBoard = new JSONObject();
+        List<Note> notes = currentBoard.getAllNotes();
+        JSONArray noteArray = new JSONArray();
+        for (int i = 0; i < notes.size(); ++i) {
+            noteArray.put(i, notes.get(i).getText());
+        }
+        personalBoard.put(NOTE_KEY, noteArray);
+        personalBoard.put(BOARD_NAME, currentBoard.getName());
+        return personalBoard;
+    }
 }

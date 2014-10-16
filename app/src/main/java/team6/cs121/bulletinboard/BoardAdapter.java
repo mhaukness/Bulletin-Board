@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -32,6 +33,9 @@ public class BoardAdapter extends ArrayAdapter<BulletinBoard> {
         } else {
             rowView = convertView;
         }
+        TextView name = (TextView) rowView.findViewById(R.id.board_name);
+        name.setText(values.get(position).getName());
+
         return rowView;
     }
 

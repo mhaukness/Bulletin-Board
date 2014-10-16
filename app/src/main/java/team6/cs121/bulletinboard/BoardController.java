@@ -1,10 +1,8 @@
 package team6.cs121.bulletinboard;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,23 +12,26 @@ import android.widget.ListView;
 
 import com.parse.Parse;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class MainScreen extends Activity implements NoteModifier {
+/**
+ * Created by alobb on 10/15/14.
+ */
+public abstract class BoardController extends Activity implements NoteModifier {
 
     private Button addNote;
+    private Button addBoard;
     private ListView noteList;
     private ListView boardList;
+    private List<BulletinBoard> boards;
     private EditText newNoteText;
-    private BulletinBoard personalBoard;
+    protected BulletinBoard currentBoard;
     private NoteAdapter noteAdapter;
-    private BoardAdapter boardAdapter;
-    private final String FILE_NAME = "personalBoard";
+    protected final String FILE_NAME = "currentBoard";
+
     private final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -45,28 +46,11 @@ public class MainScreen extends Activity implements NoteModifier {
         }
     };
     private static final int EDIT_NOTE = 1;
-    private List<BulletinBoard> boards;
+    private JSONArray JSONBoards;
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_screen);
-        Parse.initialize(this, "zLVIHD2pn243N9DhZFqDGXQrYRtqpjOqUCq1nKqq",
-                "IrVmsoQqhycibo4TNGGG36vZ8k9rrorWoaZpsdCU");
-
-
-        initBoard();
-        noteAdapter = new NoteAdapter(this, R.layout.note, personalBoard.getAllNotes());
-        this.newNoteText = (EditText) findViewById(R.id.newNoteText);
-        this.noteList = (ListView) findViewById(R.id.note_listview);
-        this.noteList.setAdapter(noteAdapter);
-        this.addNote = (Button) findViewById(R.id.createNote);
-        this.addNote.setOnClickListener(this.clickListener);
-
-        this.boardList = (ListView) findViewById(R.id.board_listview);
-        boardAdapter = new BoardAdapter(this, R.layout.board, boards);
-        this.boardList.setAdapter(boardAdapter);
+    protected void addBoard(BulletinBoard board) {
+        this.boards.add(board);
     }
 
 
@@ -74,35 +58,18 @@ public class MainScreen extends Activity implements NoteModifier {
      * Initializes the bulletin board by attempting to load a file that contains the data for the
      * personal bulletin board.  If it cannot find the file, it will create a blank board.
      */
-    private void initBoard() {
+    protected void initBoards() {
         this.boards = new ArrayList<BulletinBoard>();
-        File file = new File(this.getFilesDir(), FILE_NAME);
-        if (file.exists()) {
-            FileInputStream fis = null;
-            try {
-                fis = this.openFileInput(FILE_NAME);
-                this.personalBoard = BulletinBoard.deserialize(fis);
-            } catch (java.io.IOException e) {
-                Log.e("ERROR", e.getMessage(), e);
-            } catch (ClassNotFoundException e) {
-                Log.e("ERROR", e.getMessage(), e);
-            }
-        } else {
-            this.personalBoard = new BulletinBoard("Personal Board");
-        }
-        this.boards.add(personalBoard);
     }
 
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-            fos.write(BulletinBoard.serialize(this.personalBoard));
-            fos.close();
-        } catch (java.io.IOException e) {
-            Log.e("ERROR", e.getMessage(), e);
+    public void createNewBoard() {
+        EditText title = (EditText) findViewById(R.id.newBoardText);
+        if (!title.getText().toString().isEmpty()) {
+            Intent i = new Intent(this,GroupBoardController.class);
+            i.putExtra(BulletinBoard.BOARD_NAME, title.getText().toString());
+            title.setText("");
+            startActivity(i);
         }
     }
 
@@ -114,32 +81,48 @@ public class MainScreen extends Activity implements NoteModifier {
         String text = this.newNoteText.getText().toString();
         if (!text.isEmpty()) {
             Note note = new Note(this.newNoteText.getText().toString());
-            this.personalBoard.addNote(note);
+            this.currentBoard.addNote(note);
             this.newNoteText.setText("");
             this.noteAdapter.notifyDataSetChanged();
         }
     }
 
 
-    @Override
     public void removeNote(int index) {
-        this.personalBoard.removeNote(index);
+        this.currentBoard.removeNote(index);
         this.noteAdapter.notifyDataSetChanged();
     }
 
 
-    @Override
     public void editNote(int index) {
         Intent i = new Intent(this, EditNote.class);
-        i.putExtra(NoteModifier.NOTE_VALUE, this.personalBoard.getNote(index));
+        i.putExtra(NoteModifier.NOTE_VALUE, this.currentBoard.getNote(index));
         i.putExtra(NoteModifier.NOTE_INDEX, index);
         startActivityForResult(i, EDIT_NOTE);
     }
 
-    public void createNewBoard() {
-        EditText title = (EditText) findViewById(R.id.newBoardText);
-        BulletinBoard newBoard = new BulletinBoard(title.toString());
-        this.boards.add(newBoard);
+
+    /////////////////////////////
+    // Lifecycle Methods
+    /////////////////////////////
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.board_view);
+        Parse.initialize(this, "zLVIHD2pn243N9DhZFqDGXQrYRtqpjOqUCq1nKqq",
+                "IrVmsoQqhycibo4TNGGG36vZ8k9rrorWoaZpsdCU");
+
+        initBoards();
+        this.noteAdapter = new NoteAdapter(this, R.layout.note, currentBoard.getAllNotes());
+        this.newNoteText = (EditText) findViewById(R.id.newNoteText);
+        this.noteList = (ListView) findViewById(R.id.note_listview);
+        this.noteList.setAdapter(noteAdapter);
+        this.addNote = (Button) findViewById(R.id.createNote);
+        this.addNote.setOnClickListener(this.clickListener);
+        this.addBoard = (Button) findViewById(R.id.createBoard);
+        this.addBoard.setOnClickListener(this.clickListener);
+
+        this.boardList = (ListView) findViewById(R.id.board_listview);
     }
 
 
@@ -149,7 +132,7 @@ public class MainScreen extends Activity implements NoteModifier {
             if (resultCode == RESULT_OK) {
                 int index = data.getIntExtra(NoteModifier.NOTE_INDEX, -1);
                 if (index != -1) {
-                    Note note = this.personalBoard.getNote(index);
+                    Note note = this.currentBoard.getNote(index);
                     String newText = data.getStringExtra(NoteModifier.NOTE_VALUE);
                     note.editText(newText);
                     this.noteAdapter.notifyDataSetChanged();
@@ -157,7 +140,6 @@ public class MainScreen extends Activity implements NoteModifier {
             }
         }
     }
-
 
 
     /////////////////////////////
@@ -175,9 +157,9 @@ public class MainScreen extends Activity implements NoteModifier {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
