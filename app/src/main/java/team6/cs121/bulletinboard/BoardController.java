@@ -3,6 +3,7 @@ package team6.cs121.bulletinboard;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,29 +12,40 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.parse.Parse;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import team6.cs121.bulletinboard.DataDownload.DataDownloadReceiver;
+import team6.cs121.bulletinboard.DataDownload.DataDownloadService;
+import team6.cs121.bulletinboard.Model.BulletinBoard;
+import team6.cs121.bulletinboard.Model.Note;
+import team6.cs121.bulletinboard.Model.NoteModifier;
+
 /**
  * Created by alobb on 10/15/14.
  */
-public abstract class BoardController extends Activity implements NoteModifier {
+public abstract class BoardController extends Activity implements NoteModifier, DataDownloadReceiver.Receiver {
 
     private Button addNote;
     private Button addBoard;
     private ListView noteList;
     private ListView boardList;
-    private List<BulletinBoard> boards;
+    protected List<BulletinBoard> boards;
     private EditText newNoteText;
     private EditText newBoardText;
     protected BulletinBoard currentBoard;
     private NoteAdapter noteAdapter;
     protected final String FILE_NAME = "currentBoard";
+    public final String PARSE_BOARDS = "BoardList";
+    protected final String BOARDS = "boards";
+    protected final String NEW_BOARD_FLAG = "newBoard";
+    protected final String ALL_BOARD_FLAG = "allBoards";
+    protected final String BOARD_INDEX_FLAG = "boardIndex";
+
+    protected DataDownloadReceiver mReceiver;
+
 
     private final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
@@ -48,21 +60,13 @@ public abstract class BoardController extends Activity implements NoteModifier {
             }
         }
     };
+    protected boolean newBoard = false;
+    protected boolean boardModified = false;
     private static final int EDIT_NOTE = 1;
-    private JSONArray JSONBoards;
 
 
     protected void addBoard(BulletinBoard board) {
         this.boards.add(board);
-    }
-
-
-    /**
-     * Initializes the bulletin board by attempting to load a file that contains the data for the
-     * personal bulletin board.  If it cannot find the file, it will create a blank board.
-     */
-    protected void initBoards() {
-        this.boards = new ArrayList<BulletinBoard>();
     }
 
 
@@ -71,6 +75,8 @@ public abstract class BoardController extends Activity implements NoteModifier {
         if (!title.getText().toString().isEmpty()) {
             Intent i = new Intent(this,GroupBoardController.class);
             i.putExtra(BulletinBoard.BOARD_NAME, title.getText().toString());
+            i.putExtra(this.NEW_BOARD_FLAG, true);
+            i.putParcelableArrayListExtra(this.ALL_BOARD_FLAG, (ArrayList<BulletinBoard>) this.boards);
             startActivity(i);
             title.setText("");
         }
@@ -83,6 +89,7 @@ public abstract class BoardController extends Activity implements NoteModifier {
     private void createNote() {
         String text = this.newNoteText.getText().toString();
         if (!text.isEmpty()) {
+            this.boardModified = true;
             Note note = new Note(this.newNoteText.getText().toString());
             this.currentBoard.addNote(note);
             this.newNoteText.setText("");
@@ -92,6 +99,7 @@ public abstract class BoardController extends Activity implements NoteModifier {
 
 
     public void removeNote(int index) {
+        this.boardModified = true;
         this.currentBoard.removeNote(index);
         this.noteAdapter.notifyDataSetChanged();
     }
@@ -110,16 +118,20 @@ public abstract class BoardController extends Activity implements NoteModifier {
     }
 
 
+    protected boolean boardIsModified() {
+        return this.boardModified;
+    }
+
+
     /////////////////////////////
     // Lifecycle Methods
     /////////////////////////////
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.board_view);
-        Parse.initialize(this, "zLVIHD2pn243N9DhZFqDGXQrYRtqpjOqUCq1nKqq",
-                "IrVmsoQqhycibo4TNGGG36vZ8k9rrorWoaZpsdCU");
-
+        this.startDataService();
         initBoards();
         this.noteAdapter = new NoteAdapter(this, R.layout.note, currentBoard.getAllNotes());
         this.newNoteText = (EditText) findViewById(R.id.newNoteText);
@@ -134,12 +146,57 @@ public abstract class BoardController extends Activity implements NoteModifier {
     }
 
 
+    /**
+     * This function will be called after the service to the data is successfully connected to the
+     *  activity.  Therefore, any initialization that relies on this connection (or anything
+     *  downstream of it) should be put in here.
+     */
+    protected void finishInitialization() {
+
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+
+    private void startDataService() {
+        Intent serviceIntent = new Intent(this, DataDownloadService.class);
+        mReceiver = new DataDownloadReceiver(new Handler());
+        mReceiver.setReceiver(this);
+        serviceIntent.putExtra(DataDownloadReceiver.RECEIVER, mReceiver);
+        this.startService(serviceIntent);
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        save();
+    }
+
+
+    /**
+     *
+     */
+    protected abstract void initBoards();
+
+
+    /**
+     *
+     */
+    public abstract void save();
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == EDIT_NOTE) {
             if (resultCode == RESULT_OK) {
                 int index = data.getIntExtra(NoteModifier.NOTE_INDEX, -1);
                 if (index != -1) {
+                    this.boardModified = true;
                     Note note = this.currentBoard.getNote(index);
                     String newText = data.getStringExtra(NoteModifier.NOTE_VALUE);
                     note.editText(newText);
@@ -150,13 +207,29 @@ public abstract class BoardController extends Activity implements NoteModifier {
     }
 
 
+    @Override
+    public void onReceiveResult(int resultCode, Bundle data) {
+        switch (resultCode) {
+            case DataDownloadService.STATUS_FINISHED:
+                this.boards = data.getParcelableArrayList(DataDownloadService.BOARD_INTENT);
+                invalidateOptionsMenu();
+        }
+    }
+
+
     /////////////////////////////
-    // Android Boilerplate
+    // Action Bar Methods
     /////////////////////////////
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_screen, menu);
+        final int NEW_MENU_ID = Menu.FIRST + 1;
+        if (this.boards != null) {
+            for (int i = 0; i < this.boards.size(); ++i) {
+                menu.add(Menu.NONE, NEW_MENU_ID + i, i, this.boards.get(i).getName());
+            }
+        }
         return true;
     }
 
@@ -165,9 +238,20 @@ public abstract class BoardController extends Activity implements NoteModifier {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
+        int id = item.getItemId();
+        switch (id) {
             case R.id.action_settings:
                 break;
+        }
+        int firstBoard = Menu.FIRST + 1;
+        int lastBoard = Menu.FIRST + this.boards.size();
+        if (id >= firstBoard && id <= lastBoard) {
+            int boardIndex = id - (Menu.FIRST + 1);
+            // They want to switch to the board at boardIndex in this.boards
+            Intent i = new Intent(this, GroupBoardController.class);
+            i.putParcelableArrayListExtra(this.ALL_BOARD_FLAG, (ArrayList<BulletinBoard>) this.boards);
+            i.putExtra(this.BOARD_INDEX_FLAG, boardIndex);
+            startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }

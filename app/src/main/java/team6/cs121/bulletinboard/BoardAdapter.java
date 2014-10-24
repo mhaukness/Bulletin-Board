@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import team6.cs121.bulletinboard.Model.BulletinBoard;
+
 /**
  * Created by Marina on 10/12/2014.
  */

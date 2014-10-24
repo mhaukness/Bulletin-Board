@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import team6.cs121.bulletinboard.Model.Note;
+import team6.cs121.bulletinboard.Model.NoteModifier;
+
 /**
  * Created by alobb on 9/29/14.
  */

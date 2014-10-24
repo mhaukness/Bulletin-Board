@@ -13,6 +13,9 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import team6.cs121.bulletinboard.Model.Note;
+import team6.cs121.bulletinboard.Model.NoteModifier;
+
 /**
  * Created by alobb on 10/7/14.
  */

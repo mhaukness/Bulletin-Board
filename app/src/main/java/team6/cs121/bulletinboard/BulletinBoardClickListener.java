@@ -3,6 +3,9 @@ package team6.cs121.bulletinboard;
 import android.view.View;
 import android.widget.AdapterView;
 
+import team6.cs121.bulletinboard.Model.BulletinBoard;
+import team6.cs121.bulletinboard.Model.NoteModifier;
+
 
 /**
  * Created by alobb on 9/30/14.

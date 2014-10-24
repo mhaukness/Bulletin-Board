@@ -3,7 +3,6 @@ package team6.cs121.bulletinboard;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,17 +15,16 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
+import team6.cs121.bulletinboard.Model.BulletinBoard;
+
 /**
  * Created by alobb on 10/15/14.
  */
 public class PersonalBoardController extends BoardController {
 
 
-    private JSONArray personalBoard;
-
     @Override
     protected void initBoards() {
-        super.initBoards();
         File file = new File(this.getFilesDir(), FILE_NAME);
         if (file.exists()) {
             FileInputStream fis = null;
@@ -53,10 +51,8 @@ public class PersonalBoardController extends BoardController {
         }
     }
 
-
     @Override
-    protected void onStop() {
-        super.onStop();
+    public void save() {
         try {
             FileOutputStream fos = openFileOutput(this.FILE_NAME, Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fos);
