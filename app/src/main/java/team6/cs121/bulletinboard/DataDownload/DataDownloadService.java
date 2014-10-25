@@ -22,7 +22,7 @@ import team6.cs121.bulletinboard.Model.Note;
  * Created by alobb on 10/16/14.
  */
 public class DataDownloadService extends IntentService {
-    private static final String PARSE_NOTE_CLASS = "Note";
+    public static final String PARSE_NOTE_CLASS = "Note";
     public static final String PARSE_NOTE_VALUE = "noteValue";
     public static final String PARSE_NOTES = "boardNotes";
     private final String PARSE_BOARDS_CLASS = "Board";
@@ -36,7 +36,6 @@ public class DataDownloadService extends IntentService {
     public static final String SAVE_EDIT_FLAG = "saveEdit";
     public static final String BOARD_TO_SAVE = "boardToSave";
     public static final String BOARD_ID = "objectId";
-    public static final String BOARD_UPDATE_TIME = "updatedAt";
 
 
     public DataDownloadService() {
@@ -55,6 +54,8 @@ public class DataDownloadService extends IntentService {
             try {
                 this.saveEdit(boardToSave);
             } catch (ParseException e) {
+                Log.e("ERROR", e.getMessage(), e);
+            } catch (JSONException e) {
                 Log.e("ERROR", e.getMessage(), e);
             }
         } else {
@@ -104,13 +105,14 @@ public class DataDownloadService extends IntentService {
      * Save an edited board to Parse.com
      * @param board
      */
-    public void saveEdit(BulletinBoard board) throws ParseException {
+    public void saveEdit(BulletinBoard board) throws ParseException, JSONException {
         ParseQuery<ParseObject> boardQuery = ParseQuery.getQuery(PARSE_BOARDS_CLASS);
         ParseObject parseBoard = boardQuery.get(board.getId());
         if (parseBoard.getUpdatedAt().after(board.getLastUpdate())) {
             // Board has been updated before it was synced on this side, do not save the changes
         } else {
-
+            parseBoard = BulletinBoard.updateParse(parseBoard, board);
+            parseBoard.saveInBackground();
         }
     }
 
@@ -128,7 +130,6 @@ public class DataDownloadService extends IntentService {
             ParseObject parseNote = new ParseObject(PARSE_NOTE_CLASS);
             parseNote.put(PARSE_NOTE_VALUE, currNote.getText());
             parseNotes.add(parseNote);
-            parseNote.saveInBackground();
         }
         parseBoard.addAll(PARSE_NOTES, parseNotes);
         parseBoard.saveInBackground();

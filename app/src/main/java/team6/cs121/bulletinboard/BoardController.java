@@ -146,6 +146,8 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     @Override
     protected void onResume() {
         super.onResume();
+        mReceiver = new DataDownloadReceiver(new Handler());
+        mReceiver.setReceiver(this);
         this.refreshData();
     }
 
@@ -154,13 +156,12 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     protected void onPause() {
         super.onPause();
         save();
+        mReceiver.setReceiver(null);
     }
 
 
     private void refreshData() {
         Intent serviceIntent = new Intent(this, DataDownloadService.class);
-        mReceiver = new DataDownloadReceiver(new Handler());
-        mReceiver.setReceiver(this);
         serviceIntent.putExtra(DataDownloadReceiver.RECEIVER, mReceiver);
         this.startService(serviceIntent);
     }

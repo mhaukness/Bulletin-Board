@@ -12,7 +12,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import team6.cs121.bulletinboard.DataDownload.DataDownloadService;
 
@@ -151,31 +153,88 @@ public class BulletinBoard implements Parcelable {
                 board.addNote(currNote);
             }
         }
-        if (parseBoard.containsKey(DataDownloadService.BOARD_ID)) {
-            board.setId(parseBoard.getObjectId());
-        }
-        if (parseBoard.containsKey(DataDownloadService.BOARD_UPDATE_TIME)) {
-            board.setLastUpdate(parseBoard.getUpdatedAt());
-        }
+        board.setId(parseBoard.getObjectId());
+        board.setLastUpdate(parseBoard.getUpdatedAt());
         return board;
     }
 
+
+    public static ParseObject updateParse(ParseObject parseBoard, BulletinBoard board) throws JSONException {
+        if (!board.getName().equals(parseBoard.get(BOARD_NAME))) {
+            parseBoard.put(BOARD_NAME, board.getName());
+        }
+        Map<ParseObject, Note> noteMap = new HashMap<ParseObject, Note>();
+        List<Note> notes = board.getAllNotes();
+        int numNewNotes = 0;
+        for (Note note : notes) {
+            if (!note.getId().isEmpty()) {
+                break;
+            }
+            ++numNewNotes;
+        }
+        JSONArray jsonNotes = parseBoard.getJSONArray(DataDownloadService.PARSE_NOTES);
+        for (int i = numNewNotes; i < notes.size(); ++i) {
+            ParseObject parseNote = Note.updateParse((ParseObject) jsonNotes.get(i), notes.get(i));
+            jsonNotes.put(i, parseNote);
+        }
+        for (int i = 0; i < numNewNotes; ++i) {
+            ParseObject parseNote = Note.createParseNote(notes.get(i));
+            jsonNotes.put(i, parseNote);
+        }
+        parseBoard.put(DataDownloadService.PARSE_NOTES, jsonNotes);
+        return parseBoard;
+    }
+
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other == null || (other.getClass() != ((Object) this).getClass())) {
+            return false;
+        }
+        BulletinBoard otherBoard = (BulletinBoard) other;
+        if (this.numNotes() != otherBoard.numNotes()) {
+            return false;
+        }
+        for (int i = 0; i < this.numNotes(); ++i) {
+            if (this.getNote(i).equals(otherBoard.getNote(i))) {
+                return false;
+            }
+        }
+        return this.getName().equals(otherBoard.getName()) &&
+               this.getId().equals(otherBoard.getId()) &&
+               (this.getLastUpdate().compareTo(otherBoard.getLastUpdate()) == 0);
+    }
+
+
+    ////////////////////////////////////
+    // Functions for Parcelable
+    ////////////////////////////////////
     @Override
     public int describeContents() {
         return 0;
     }
 
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeList(this.getAllNotes());
         dest.writeString(this.getName());
+        dest.writeString(this.getId());
+        dest.writeValue(this.getLastUpdate());
     }
+
 
     private BulletinBoard(Parcel in) {
         this.notes = new ArrayList<Note>();
         in.readList(this.notes, Note.class.getClassLoader());
         this.name = in.readString();
+        this.id = in.readString();
+        this.lastUpdate = (Date) in.readValue(Date.class.getClassLoader());
     }
+
 
     public static final Parcelable.Creator<BulletinBoard> CREATOR = new Parcelable.Creator<BulletinBoard>() {
 

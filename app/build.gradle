@@ -22,5 +22,4 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/Parse-1.7.0.jar')
-    androidTestCompile 'junit:junit-dep:4.11'
 }
