@@ -1,4 +1,4 @@
-package team6.cs121.bulletinboard;
+package application;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import team6.cs121.bulletinboard.Model.BulletinBoard;
-import team6.cs121.bulletinboard.Model.Note;
-import team6.cs121.bulletinboard.Model.NoteModifier;
+import application.model.BulletinBoard;
+import application.model.Note;
+import application.model.NoteModifier;
 
 /**
  * Created by alobb on 9/29/14.

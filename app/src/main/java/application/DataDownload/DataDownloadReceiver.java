@@ -1,4 +1,4 @@
-package team6.cs121.bulletinboard.DataDownload;
+package application.DataDownload;
 
 import android.os.Bundle;
 import android.os.Handler;

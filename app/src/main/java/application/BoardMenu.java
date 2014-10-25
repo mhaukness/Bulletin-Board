@@ -1,4 +1,4 @@
-package team6.cs121.bulletinboard;
+package application;
 
 import android.app.Activity;
 import android.os.Bundle;

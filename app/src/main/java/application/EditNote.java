@@ -1,4 +1,4 @@
-package team6.cs121.bulletinboard;
+package application;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,8 +13,8 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import team6.cs121.bulletinboard.Model.Note;
-import team6.cs121.bulletinboard.Model.NoteModifier;
+import application.model.Note;
+import application.model.NoteModifier;
 
 /**
  * Created by alobb on 10/7/14.

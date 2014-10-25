@@ -1,12 +1,13 @@
-package team6.cs121.bulletinboard;
+package application;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import team6.cs121.bulletinboard.DataDownload.DataDownloadReceiver;
-import team6.cs121.bulletinboard.DataDownload.DataDownloadService;
-import team6.cs121.bulletinboard.Model.BulletinBoard;
+import application.DataDownload.BoardHolderSingleton;
+import application.DataDownload.DataDownloadReceiver;
+import application.DataDownload.DataDownloadService;
+import application.model.BulletinBoard;
 
 /**
  * Created by alobb on 10/15/14.
@@ -20,7 +21,7 @@ public class GroupBoardController extends BoardController {
             Intent serviceIntent = new Intent(this, DataDownloadService.class);
             mReceiver = new DataDownloadReceiver(new Handler());
             mReceiver.setReceiver(this);
-            serviceIntent.putExtra(DataDownloadService.BOARD_TO_SAVE, this.currentBoard);
+            BoardHolderSingleton.getBoardHolder().setBoardToSave(this.currentBoard);
             if (this.newBoard) {
                 serviceIntent.putExtra(DataDownloadService.SAVE_NEW_FLAG, true);
             } else {
@@ -51,9 +52,6 @@ public class GroupBoardController extends BoardController {
             if (extras.containsKey(this.NEW_BOARD_FLAG)) {
                 this.boardModified = true;
                 this.newBoard = true;
-            }
-            if (extras.containsKey(this.ALL_BOARD_FLAG)) {
-                this.boards = extras.getParcelableArrayList(this.ALL_BOARD_FLAG);
             }
             if (extras.containsKey(this.BOARD_INDEX_FLAG)) {
                 this.currentBoard = this.boards.get(extras.getInt(this.BOARD_INDEX_FLAG));

@@ -1,4 +1,4 @@
-package team6.cs121.bulletinboard;
+package application;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,14 +14,14 @@ import android.widget.ListView;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import team6.cs121.bulletinboard.DataDownload.DataDownloadReceiver;
-import team6.cs121.bulletinboard.DataDownload.DataDownloadService;
-import team6.cs121.bulletinboard.Model.BulletinBoard;
-import team6.cs121.bulletinboard.Model.Note;
-import team6.cs121.bulletinboard.Model.NoteModifier;
+import application.DataDownload.BoardHolderSingleton;
+import application.DataDownload.DataDownloadReceiver;
+import application.DataDownload.DataDownloadService;
+import application.model.BulletinBoard;
+import application.model.Note;
+import application.model.NoteModifier;
 
 /**
  * Created by alobb on 10/15/14.
@@ -76,7 +76,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             Intent i = new Intent(this,GroupBoardController.class);
             i.putExtra(BulletinBoard.BOARD_NAME, title.getText().toString());
             i.putExtra(this.NEW_BOARD_FLAG, true);
-            i.putParcelableArrayListExtra(this.ALL_BOARD_FLAG, (ArrayList<BulletinBoard>) this.boards);
             startActivity(i);
             title.setText("");
         }
@@ -91,7 +90,11 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         if (!text.isEmpty()) {
             this.boardModified = true;
             Note note = new Note(this.newNoteText.getText().toString());
-            this.currentBoard.addNote(note);
+            try {
+                this.currentBoard.addNote(note);
+            } catch (JSONException e) {
+                Log.e("ERROR", e.getMessage(), e);
+            }
             this.newNoteText.setText("");
             this.boardAdapter.notifyDataSetChanged();
         }
@@ -100,7 +103,11 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
     public void removeNote(int index) {
         this.boardModified = true;
-        this.currentBoard.removeNote(index);
+        try {
+            this.currentBoard.removeNote(index);
+        } catch (JSONException e) {
+            Log.e("ERROR", e.getMessage(), e);
+        }
         this.boardAdapter.notifyDataSetChanged();
     }
 
@@ -171,7 +178,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
      *
      */
     protected void initBoards(Bundle extras) {
-        this.boards = new ArrayList<BulletinBoard>();
+        this.boards = BoardHolderSingleton.getBoardHolder().getAllBoards();
     }
 
 
@@ -202,7 +209,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     public void onReceiveResult(int resultCode, Bundle data) {
         switch (resultCode) {
             case DataDownloadService.STATUS_FINISHED:
-                List<BulletinBoard> newBoards = data.getParcelableArrayList(DataDownloadService.BOARD_INTENT);
+                List<BulletinBoard> newBoards = BoardHolderSingleton.getBoardHolder().getAllBoards();
                 this.boards = newBoards;
                 invalidateOptionsMenu();
         }
@@ -243,7 +250,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             int boardIndex = id - (Menu.FIRST + 1);
             // They want to switch to the board at boardIndex in this.boards
             Intent i = new Intent(this, GroupBoardController.class);
-            i.putParcelableArrayListExtra(this.ALL_BOARD_FLAG, (ArrayList<BulletinBoard>) this.boards);
             i.putExtra(this.BOARD_INDEX_FLAG, boardIndex);
             startActivity(i);
         }

@@ -1,4 +1,4 @@
-package team6.cs121.bulletinboard.DataDownload;
+package application.DataDownload;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -12,11 +12,9 @@ import com.parse.ParseQuery;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import team6.cs121.bulletinboard.Model.BulletinBoard;
-import team6.cs121.bulletinboard.Model.Note;
+import application.model.BulletinBoard;
 
 /**
  * Created by alobb on 10/16/14.
@@ -28,8 +26,6 @@ public class DataDownloadService extends IntentService {
     private final String PARSE_BOARDS_CLASS = "Board";
     private final String PARSE_BOARD = "bulletinBoard";
     public static final String BOARD_NAME = "boardName";
-    private ParseObject parseBoards;
-    private List<BulletinBoard> boards;
     public static final String BOARD_INTENT = "boardValues";
     public static final int STATUS_FINISHED = 1;
     public static final String SAVE_NEW_FLAG = "saveNew";
@@ -47,10 +43,10 @@ public class DataDownloadService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Bundle bundle = new Bundle();
         if (intent.getBooleanExtra(SAVE_NEW_FLAG, false)) {
-            BulletinBoard boardToSave = intent.getParcelableExtra(BOARD_TO_SAVE);
+            BulletinBoard boardToSave = BoardHolderSingleton.getBoardHolder().getBoardToSave();
             this.saveNewData(boardToSave);
         } else if (intent.getBooleanExtra(SAVE_EDIT_FLAG, false)) {
-            BulletinBoard boardToSave = intent.getParcelableExtra(BOARD_TO_SAVE);
+            BulletinBoard boardToSave = BoardHolderSingleton.getBoardHolder().getBoardToSave();
             try {
                 this.saveEdit(boardToSave);
             } catch (ParseException e) {
@@ -64,7 +60,8 @@ public class DataDownloadService extends IntentService {
             try {
                 currBoards = this.readBoards();
                 if (currBoards.size() > 0) {
-                    bundle.putParcelableArrayList(BOARD_INTENT, (ArrayList<BulletinBoard>) currBoards);
+                    BoardHolderSingleton bh = BoardHolderSingleton.getBoardHolder();
+                    bh.setBoards(currBoards);
                     receiver.send(STATUS_FINISHED, bundle);
                 }
             } catch (ParseException e) {
@@ -75,29 +72,15 @@ public class DataDownloadService extends IntentService {
     }
 
 
-    private void addBoard(BulletinBoard board) {
-        this.boards.add(board);
-    }
-
-
+    /**
+     *
+     * @return
+     * @throws ParseException
+     */
     private List<BulletinBoard> readBoards() throws ParseException {
-        final List<BulletinBoard> currBoards = new ArrayList<BulletinBoard>();
-        ParseQuery<ParseObject> boardQuery = ParseQuery.getQuery(PARSE_BOARDS_CLASS);
+        ParseQuery<BulletinBoard> boardQuery = ParseQuery.getQuery(PARSE_BOARDS_CLASS);
         boardQuery.include(PARSE_NOTES);
-        List<ParseObject> objects = boardQuery.find();
-        for (int i = 0; i < objects.size(); ++i) {
-            ParseObject currObject = objects.get(i);
-            BulletinBoard currBoard = null;
-            try {
-                currBoard = BulletinBoard.createFromParse(currObject);
-            } catch (JSONException jsonE) {
-                Log.e("ERROR", jsonE.getMessage(), jsonE);
-            } catch (ParseException parseE) {
-                Log.e("ERROR", parseE.getMessage(), parseE);
-            }
-            currBoards.add(currBoard);
-        }
-        return currBoards;
+        return boardQuery.find();
     }
 
 
@@ -111,8 +94,7 @@ public class DataDownloadService extends IntentService {
         if (parseBoard.getUpdatedAt().after(board.getLastUpdate())) {
             // Board has been updated before it was synced on this side, do not save the changes
         } else {
-            parseBoard = BulletinBoard.updateParse(parseBoard, board);
-            parseBoard.saveInBackground();
+            board.saveInBackground();
         }
     }
 
@@ -122,16 +104,6 @@ public class DataDownloadService extends IntentService {
      * @param board
      */
     public void saveNewData(BulletinBoard board) {
-        ParseObject parseBoard = new ParseObject(PARSE_BOARDS_CLASS);
-        parseBoard.put(BOARD_NAME, board.getName());
-        List<ParseObject> parseNotes = new ArrayList<ParseObject>();
-        for (int i = 0; i < board.numNotes(); ++i) {
-            Note currNote = board.getNote(i);
-            ParseObject parseNote = new ParseObject(PARSE_NOTE_CLASS);
-            parseNote.put(PARSE_NOTE_VALUE, currNote.getText());
-            parseNotes.add(parseNote);
-        }
-        parseBoard.addAll(PARSE_NOTES, parseNotes);
-        parseBoard.saveInBackground();
+        board.saveInBackground();
     }
 }

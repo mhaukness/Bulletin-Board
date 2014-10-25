@@ -1,8 +1,12 @@
-package team6.cs121.bulletinboard;
+package application;
 
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseObject;
+
+import application.model.BulletinBoard;
+import application.model.Note;
 
 /**
  * Created by alobb on 10/15/14.
@@ -16,11 +20,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ParseObject.registerSubclass(BulletinBoard.class);
+        ParseObject.registerSubclass(Note.class);
         Parse.initialize(this, APPLICATION_ID, CLIENT_KEY);
-    }
-
-
-    public void test() {
-
     }
 }

@@ -1,6 +1,5 @@
-package team6.cs121.bulletinboard;
+package application;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -16,7 +15,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
-import team6.cs121.bulletinboard.Model.BulletinBoard;
+import application.model.BulletinBoard;
 
 /**
  * Created by alobb on 10/15/14.
@@ -57,7 +56,7 @@ public class PersonalBoardController extends BoardController {
     @Override
     public void save() {
         try {
-            FileOutputStream fos = openFileOutput(this.FILE_NAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput(this.FILE_NAME, MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             JSONObject array = BulletinBoard.writeToJSON(this.currentBoard);
             osw.write(array.toString());

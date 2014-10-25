@@ -1,4 +1,4 @@
-package team6.cs121.bulletinboard.Model;
+package application.model;
 
 /**
  * Created by alobb on 10/6/14.

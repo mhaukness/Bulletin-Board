@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="team6.cs121.bulletinboard" >
+    package="application">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -26,13 +26,13 @@
         <activity
             android:name=".EditNote"
             android:label="EditNote"
-            android:parentActivityName=".PersonalBoardController">
+            android:parentActivityName="application.PersonalBoardController">
         </activity>
 
         <activity
             android:name=".GroupBoardController"
             android:label="GroupBoardController"
-            android:parentActivityName=".PersonalBoardController">
+            android:parentActivityName="application.PersonalBoardController">
         </activity>
 
 
@@ -41,5 +41,6 @@
             android:label="DataDownloadService">
         </service>
     </application>
+
 
 </manifest>

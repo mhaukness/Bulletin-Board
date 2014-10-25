@@ -1,10 +1,10 @@
-package team6.cs121.bulletinboard;
+package application;
 
 import android.view.View;
 import android.widget.AdapterView;
 
-import team6.cs121.bulletinboard.Model.BulletinBoard;
-import team6.cs121.bulletinboard.Model.NoteModifier;
+import application.model.BulletinBoard;
+import application.model.NoteModifier;
 
 
 /**
