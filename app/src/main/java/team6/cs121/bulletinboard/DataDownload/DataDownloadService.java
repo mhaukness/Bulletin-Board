@@ -32,8 +32,11 @@ public class DataDownloadService extends IntentService {
     private List<BulletinBoard> boards;
     public static final String BOARD_INTENT = "boardValues";
     public static final int STATUS_FINISHED = 1;
-    public static final String SAVE_DATA_FLAG = "saveData";
+    public static final String SAVE_NEW_FLAG = "saveNew";
+    public static final String SAVE_EDIT_FLAG = "saveEdit";
     public static final String BOARD_TO_SAVE = "boardToSave";
+    public static final String BOARD_ID = "objectId";
+    public static final String BOARD_UPDATE_TIME = "updatedAt";
 
 
     public DataDownloadService() {
@@ -44,9 +47,16 @@ public class DataDownloadService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Bundle bundle = new Bundle();
-        if (intent.getBooleanExtra(SAVE_DATA_FLAG, false)) {
+        if (intent.getBooleanExtra(SAVE_NEW_FLAG, false)) {
             BulletinBoard boardToSave = intent.getParcelableExtra(BOARD_TO_SAVE);
             this.saveNewData(boardToSave);
+        } else if (intent.getBooleanExtra(SAVE_EDIT_FLAG, false)) {
+            BulletinBoard boardToSave = intent.getParcelableExtra(BOARD_TO_SAVE);
+            try {
+                this.saveEdit(boardToSave);
+            } catch (ParseException e) {
+                Log.e("ERROR", e.getMessage(), e);
+            }
         } else {
             final ResultReceiver receiver = intent.getParcelableExtra(DataDownloadReceiver.RECEIVER);
             List<BulletinBoard> currBoards = null;
@@ -92,10 +102,16 @@ public class DataDownloadService extends IntentService {
 
     /**
      * Save an edited board to Parse.com
-     * @param boards
+     * @param board
      */
-    public void saveEdit(List<BulletinBoard> boards) {
-        // TODO: Implement
+    public void saveEdit(BulletinBoard board) throws ParseException {
+        ParseQuery<ParseObject> boardQuery = ParseQuery.getQuery(PARSE_BOARDS_CLASS);
+        ParseObject parseBoard = boardQuery.get(board.getId());
+        if (parseBoard.getUpdatedAt().after(board.getLastUpdate())) {
+            // Board has been updated before it was synced on this side, do not save the changes
+        } else {
+
+        }
     }
 
 

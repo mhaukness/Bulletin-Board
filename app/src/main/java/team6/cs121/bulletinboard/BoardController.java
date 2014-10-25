@@ -36,7 +36,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     private EditText newNoteText;
     private EditText newBoardText;
     protected BulletinBoard currentBoard;
-    private NoteAdapter noteAdapter;
+    protected BoardAdapter boardAdapter;
     protected final String FILE_NAME = "currentBoard";
     public final String PARSE_BOARDS = "BoardList";
     protected final String BOARDS = "boards";
@@ -93,7 +93,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             Note note = new Note(this.newNoteText.getText().toString());
             this.currentBoard.addNote(note);
             this.newNoteText.setText("");
-            this.noteAdapter.notifyDataSetChanged();
+            this.boardAdapter.notifyDataSetChanged();
         }
     }
 
@@ -101,7 +101,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     public void removeNote(int index) {
         this.boardModified = true;
         this.currentBoard.removeNote(index);
-        this.noteAdapter.notifyDataSetChanged();
+        this.boardAdapter.notifyDataSetChanged();
     }
 
 
@@ -128,41 +128,36 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     /////////////////////////////
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.board_view);
-        this.startDataService();
-        initBoards();
-        this.noteAdapter = new NoteAdapter(this, R.layout.note, currentBoard.getAllNotes());
+        initBoards(getIntent().getExtras());
+        this.boardAdapter = new BoardAdapter(this, R.layout.note, this.currentBoard);
         this.newNoteText = (EditText) findViewById(R.id.newNoteText);
         this.noteList = (ListView) findViewById(R.id.note_listview);
-        this.noteList.setAdapter(noteAdapter);
+        this.noteList.setAdapter(boardAdapter);
         this.addNote = (Button) findViewById(R.id.createNote);
         this.addNote.setOnClickListener(this.clickListener);
         this.addBoard = (Button) findViewById(R.id.createBoard);
         this.addBoard.setOnClickListener(this.clickListener);
-
         this.boardList = (ListView) findViewById(R.id.board_listview);
     }
 
 
-    /**
-     * This function will be called after the service to the data is successfully connected to the
-     *  activity.  Therefore, any initialization that relies on this connection (or anything
-     *  downstream of it) should be put in here.
-     */
-    protected void finishInitialization() {
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.refreshData();
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
+        save();
     }
 
 
-    private void startDataService() {
+    private void refreshData() {
         Intent serviceIntent = new Intent(this, DataDownloadService.class);
         mReceiver = new DataDownloadReceiver(new Handler());
         mReceiver.setReceiver(this);
@@ -171,17 +166,12 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        save();
-    }
-
-
     /**
      *
      */
-    protected abstract void initBoards();
+    protected void initBoards(Bundle extras) {
+        this.boards = new ArrayList<BulletinBoard>();
+    }
 
 
     /**
@@ -200,7 +190,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
                     Note note = this.currentBoard.getNote(index);
                     String newText = data.getStringExtra(NoteModifier.NOTE_VALUE);
                     note.editText(newText);
-                    this.noteAdapter.notifyDataSetChanged();
+                    this.boardAdapter.notifyDataSetChanged();
                 }
             }
         }
@@ -211,7 +201,8 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     public void onReceiveResult(int resultCode, Bundle data) {
         switch (resultCode) {
             case DataDownloadService.STATUS_FINISHED:
-                this.boards = data.getParcelableArrayList(DataDownloadService.BOARD_INTENT);
+                List<BulletinBoard> newBoards = data.getParcelableArrayList(DataDownloadService.BOARD_INTENT);
+                this.boards = newBoards;
                 invalidateOptionsMenu();
         }
     }
@@ -242,6 +233,8 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         switch (id) {
             case R.id.action_settings:
                 break;
+            case R.id.refresh:
+                refreshData();
         }
         int firstBoard = Menu.FIRST + 1;
         int lastBoard = Menu.FIRST + this.boards.size();

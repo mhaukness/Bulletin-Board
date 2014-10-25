@@ -17,6 +17,7 @@ public class Note implements Parcelable {
 
     private String text;
     private static final String NOTE_VALUE = "text";
+    private String id;
 
 
     /**e
@@ -44,6 +45,24 @@ public class Note implements Parcelable {
 
     /**
      *
+     * @return
+     */
+    public String getId() {
+        return id;
+    }
+
+
+    /**
+     *
+     * @param id
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    /**
+     *
      * @param newText
      */
     public void editText(String newText) {
@@ -66,6 +85,9 @@ public class Note implements Parcelable {
         Note note = new Note();
         if (currParseNote.containsKey(DataDownloadService.PARSE_NOTE_VALUE)) {
             note.editText(currParseNote.getString(DataDownloadService.PARSE_NOTE_VALUE));
+        }
+        if (currParseNote.containsKey(DataDownloadService.BOARD_ID)) {
+            note.setId(currParseNote.getObjectId());
         }
         return note;
     }

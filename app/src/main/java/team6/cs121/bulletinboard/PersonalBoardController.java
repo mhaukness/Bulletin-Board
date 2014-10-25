@@ -1,6 +1,7 @@
 package team6.cs121.bulletinboard;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -24,7 +25,8 @@ public class PersonalBoardController extends BoardController {
 
 
     @Override
-    protected void initBoards() {
+    protected void initBoards(Bundle extras) {
+        super.initBoards(extras);
         File file = new File(this.getFilesDir(), FILE_NAME);
         if (file.exists()) {
             FileInputStream fis = null;
@@ -50,6 +52,7 @@ public class PersonalBoardController extends BoardController {
             this.currentBoard = new BulletinBoard("Personal Board");
         }
     }
+
 
     @Override
     public void save() {

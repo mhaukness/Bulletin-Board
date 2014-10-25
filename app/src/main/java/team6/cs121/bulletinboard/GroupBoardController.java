@@ -13,6 +13,7 @@ import team6.cs121.bulletinboard.Model.BulletinBoard;
  */
 public class GroupBoardController extends BoardController {
 
+
     @Override
     public void save() {
         if (this.boardIsModified()) {
@@ -20,14 +21,27 @@ public class GroupBoardController extends BoardController {
             mReceiver = new DataDownloadReceiver(new Handler());
             mReceiver.setReceiver(this);
             serviceIntent.putExtra(DataDownloadService.BOARD_TO_SAVE, this.currentBoard);
-            serviceIntent.putExtra(DataDownloadService.SAVE_DATA_FLAG, true);
+            if (this.newBoard) {
+                serviceIntent.putExtra(DataDownloadService.SAVE_NEW_FLAG, true);
+            } else {
+                serviceIntent.putExtra(DataDownloadService.SAVE_EDIT_FLAG, true);
+            }
             this.startService(serviceIntent);
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Bundle extras = getIntent().getExtras();
+        super.onCreate(savedInstanceState);
+        setTitle(this.currentBoard.getName());
+        this.boardAdapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    protected void initBoards(Bundle extras) {
+        super.initBoards(extras);
         if (extras != null) {
             if (extras.containsKey(BulletinBoard.BOARD_NAME)) {
                 String name = extras.getString(BulletinBoard.BOARD_NAME);
@@ -45,12 +59,5 @@ public class GroupBoardController extends BoardController {
                 this.currentBoard = this.boards.get(extras.getInt(this.BOARD_INDEX_FLAG));
             }
         }
-        setTitle(this.currentBoard.getName());
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initBoards() {
-
     }
 }

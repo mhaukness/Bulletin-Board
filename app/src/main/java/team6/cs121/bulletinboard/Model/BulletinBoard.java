@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import team6.cs121.bulletinboard.DataDownload.DataDownloadService;
@@ -24,6 +25,8 @@ public class BulletinBoard implements Parcelable {
     private List<Note> notes;
     public static final String NOTE_KEY = "notes";
     public static final String BOARD_NAME = "boardName";
+    private String id;
+    private Date lastUpdate;
 
 
 
@@ -34,6 +37,26 @@ public class BulletinBoard implements Parcelable {
     public BulletinBoard(String name) {
         this.notes = new ArrayList<Note>();
         this.name = name;
+    }
+
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getId() {
+        return this.id;
+    }
+
+
+    public void setLastUpdate(Date date) {
+        this.lastUpdate = date;
+    }
+
+
+    public Date getLastUpdate() {
+        return this.lastUpdate;
     }
 
 
@@ -127,6 +150,12 @@ public class BulletinBoard implements Parcelable {
                 Note currNote = Note.createFromParse(currParseNote);
                 board.addNote(currNote);
             }
+        }
+        if (parseBoard.containsKey(DataDownloadService.BOARD_ID)) {
+            board.setId(parseBoard.getObjectId());
+        }
+        if (parseBoard.containsKey(DataDownloadService.BOARD_UPDATE_TIME)) {
+            board.setLastUpdate(parseBoard.getUpdatedAt());
         }
         return board;
     }
