@@ -73,7 +73,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     public void createNewBoard() {
         EditText title = (EditText) findViewById(R.id.newBoardText);
         if (!title.getText().toString().isEmpty()) {
-            Intent i = new Intent(this,GroupBoardController.class);
+            Intent i = new Intent(this, GroupBoardController.class);
             i.putExtra(BulletinBoard.BOARD_NAME, title.getText().toString());
             i.putExtra(this.NEW_BOARD_FLAG, true);
             startActivity(i);

@@ -1,7 +1,5 @@
 package application.model;
 
-import android.util.Log;
-
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
@@ -35,6 +33,7 @@ public class BulletinBoard extends ParseObject {
     public BulletinBoard(String name) {
         super();
         this.put(BOARD_NAME, name);
+        this.put(NOTE_KEY, new ArrayList<Note>());
     }
 
 
@@ -53,9 +52,9 @@ public class BulletinBoard extends ParseObject {
      * @param note
      */
     public void addNote(Note note) throws JSONException {
-        JSONArray jsonNotes = this.getJSONArray(NOTE_KEY);
-        jsonNotes.put(0, note);
-        this.put(NOTE_KEY, jsonNotes);
+        List<Note> notes = this.getAllNotes();
+        notes.add(0, note);
+        this.put(NOTE_KEY, notes);
     }
 
 
@@ -65,12 +64,7 @@ public class BulletinBoard extends ParseObject {
      * @return
      */
     public Note getNote(int index) {
-        try {
-            return (Note) this.getJSONArray(NOTE_KEY).get(index);
-        } catch (JSONException e) {
-            Log.e("ERROR", e.getMessage(), e);
-            return null;
-        }
+        return this.getNoteArray().get(index);
     }
 
 
@@ -88,28 +82,15 @@ public class BulletinBoard extends ParseObject {
      * @return
      */
     public List<Note> getAllNotes() {
-        if (this.getJSONArray(NOTE_KEY) == null) {
-            new ArrayList<Note>();
-        }
-        JSONArray jsonNotes = this.getJSONArray(NOTE_KEY);
-        List<Note> notes = new ArrayList<Note>();
-        for (int i = 0; i < jsonNotes.length(); ++i) {
-            try {
-                notes.add((Note) jsonNotes.get(i));
-            } catch (JSONException e) {
-                Log.e("ERROR", e.getMessage(), e);
-                return null;
-            }
-        }
-        return notes;
+        return this.getNoteArray();
     }
 
 
     public int numNotes() {
-        if (this.getJSONArray(NOTE_KEY) == null) {
+        if (this.getNoteArray() == null) {
             return 0;
         }
-        return this.getJSONArray(NOTE_KEY).length();
+        return this.getNoteArray().size();
     }
 
 
@@ -118,14 +99,9 @@ public class BulletinBoard extends ParseObject {
      * @param index
      */
     public void removeNote(int index) throws JSONException {
-        JSONArray jsonNotes = this.getJSONArray(NOTE_KEY);
-        JSONArray newJsonNotes = new JSONArray();
-        for (int i = 0; i < jsonNotes.length(); ++i) {
-            if (i != index) {
-                newJsonNotes.put(jsonNotes.get(i));
-            }
-        }
-        this.put(NOTE_KEY, newJsonNotes);
+        List<Note> notes = this.getAllNotes();
+        notes.remove(index);
+        this.put(NOTE_KEY, notes);
     }
 
 
@@ -175,5 +151,10 @@ public class BulletinBoard extends ParseObject {
         return this.getName().equals(otherBoard.getName()) &&
                this.getId().equals(otherBoard.getId()) &&
                (this.getLastUpdate().compareTo(otherBoard.getLastUpdate()) == 0);
+    }
+
+
+    private List<Note> getNoteArray() {
+        return (ArrayList<Note>) this.get(NOTE_KEY);
     }
 }

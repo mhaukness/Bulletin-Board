@@ -12,6 +12,7 @@ import com.parse.ParseQuery;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import application.model.BulletinBoard;
@@ -22,7 +23,6 @@ import application.model.BulletinBoard;
 public class DataDownloadService extends IntentService {
     public static final String PARSE_NOTE_CLASS = "Note";
     public static final String PARSE_NOTE_VALUE = "noteValue";
-    public static final String PARSE_NOTES = "boardNotes";
     private final String PARSE_BOARDS_CLASS = "Board";
     private final String PARSE_BOARD = "bulletinBoard";
     public static final String BOARD_NAME = "boardName";
@@ -59,12 +59,12 @@ public class DataDownloadService extends IntentService {
             List<BulletinBoard> currBoards = null;
             try {
                 currBoards = this.readBoards();
-                if (currBoards.size() > 0) {
-                    BoardHolderSingleton bh = BoardHolderSingleton.getBoardHolder();
-                    bh.setBoards(currBoards);
-                    receiver.send(STATUS_FINISHED, bundle);
-                }
+                BoardHolderSingleton bh = BoardHolderSingleton.getBoardHolder();
+                bh.setBoards(currBoards);
+                receiver.send(STATUS_FINISHED, bundle);
             } catch (ParseException e) {
+                Log.e("ERROR", e.getMessage(), e);
+            } catch (JSONException e) {
                 Log.e("ERROR", e.getMessage(), e);
             }
         }
@@ -77,10 +77,14 @@ public class DataDownloadService extends IntentService {
      * @return
      * @throws ParseException
      */
-    private List<BulletinBoard> readBoards() throws ParseException {
+    private List<BulletinBoard> readBoards() throws ParseException, JSONException {
         ParseQuery<BulletinBoard> boardQuery = ParseQuery.getQuery(PARSE_BOARDS_CLASS);
-        boardQuery.include(PARSE_NOTES);
-        return boardQuery.find();
+        boardQuery.include(BulletinBoard.NOTE_KEY);
+        List<BulletinBoard> boards = boardQuery.find();
+        if (boards == null) {
+            boards = new ArrayList<BulletinBoard>();
+        }
+        return boards;
     }
 
 
