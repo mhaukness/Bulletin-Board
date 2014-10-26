@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="team6.cs121.bulletinboard" >
+    package="application">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         >
         <activity
-            android:name=".MainScreen"
+            android:name=".PersonalBoardController"
             android:label="@string/app_name"
             android:launchMode="singleTop">
             <intent-filter>
@@ -25,11 +29,21 @@
         <activity
             android:name=".EditNote"
             android:label="EditNote"
-            android:parentActivityName=".MainScreen">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+            android:parentActivityName="application.PersonalBoardController">
         </activity>
+
+        <activity
+            android:name=".GroupBoardController"
+            android:label="GroupBoardController"
+            android:parentActivityName="application.PersonalBoardController">
+        </activity>
+
+
+        <service
+            android:name=".DataDownload.DataDownloadService"
+            android:label="DataDownloadService">
+        </service>
     </application>
+
 
 </manifest>

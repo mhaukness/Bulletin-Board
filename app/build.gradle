@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 
+
 android {
     compileSdkVersion 20
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.example.marina.bulletin_board"
+        applicationId "com.bulletin_board"
         minSdkVersion 15
         targetSdkVersion 20
         versionCode 1
@@ -15,6 +16,13 @@ android {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+
+        androidTest {
+            java.srcDirs = ['src/androidTest/java']
         }
     }
 }
