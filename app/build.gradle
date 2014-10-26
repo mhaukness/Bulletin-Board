@@ -30,6 +30,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/Parse-1.7.0.jar')
-    compile files('libs/junit-4.7.jar')
     compile files('libs/robolectric-2.3-jar-with-dependencies.jar')
 }

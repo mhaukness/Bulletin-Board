@@ -157,4 +157,20 @@ public class BulletinBoard extends ParseObject {
     private List<Note> getNoteArray() {
         return (ArrayList<Note>) this.get(NOTE_KEY);
     }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name: ");
+        sb.append(this.getName());
+        List<Note> notes = this.getAllNotes();
+        for (int i = 0; i < notes.size(); ++i) {
+            if (i < notes.size() - 1) {
+                sb.append(System.getProperty("line.separator"));
+            }
+            sb.append(notes.get(i).toString());
+        }
+        return sb.toString();
+    }
 }

@@ -24,4 +24,14 @@ public class App extends Application {
         ParseObject.registerSubclass(Note.class);
         Parse.initialize(this, APPLICATION_ID, CLIENT_KEY);
     }
+
+
+    public static String getApplicationId() {
+        return APPLICATION_ID;
+    }
+
+
+    public static String getClientKey() {
+        return CLIENT_KEY;
+    }
 }

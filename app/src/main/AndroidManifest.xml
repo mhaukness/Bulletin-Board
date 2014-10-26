@@ -42,5 +42,8 @@
         </service>
     </application>
 
+    <!--<instrumentation-->
+        <!--android:name="android.test.InstrumentationTestRunner"-->
+        <!--android:targetPackage="application" />-->
 
 </manifest>

@@ -78,4 +78,13 @@ public class Note extends ParseObject {
         jsonNote.put(DataDownloadService.PARSE_NOTE_VALUE, note.getText());
         return jsonNote;
     }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Text: ");
+        sb.append(this.getText());
+        return sb.toString();
+    }
 }
