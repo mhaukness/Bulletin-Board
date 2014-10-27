@@ -8,21 +8,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import application.DataDownload.ParseKeywords;
 
 /**
  * Created by alobb on 9/28/14.
  */
-@ParseClassName("Board")
+@ParseClassName(ParseKeywords.BOARD_CLASS)
 public class BulletinBoard extends ParseObject {
 
-    public static final String NOTE_KEY = "notes";
-    public static final String BOARD_NAME = "boardName";
+    private boolean isModified = false;
 
 
     public BulletinBoard() {
-        // Required for parseObject
+        // Required for ParseObject subclass
     }
 
 
@@ -32,18 +32,8 @@ public class BulletinBoard extends ParseObject {
      */
     public BulletinBoard(String name) {
         super();
-        this.put(BOARD_NAME, name);
-        this.put(NOTE_KEY, new ArrayList<Note>());
-    }
-
-
-    public String getId() {
-        return this.getObjectId();
-    }
-
-
-    public Date getLastUpdate() {
-        return this.getUpdatedAt();
+        this.put(ParseKeywords.BOARD_NAME, name);
+        this.put(ParseKeywords.BOARD_NOTE_ARRAY, new ArrayList<Note>());
     }
 
 
@@ -54,7 +44,7 @@ public class BulletinBoard extends ParseObject {
     public void addNote(Note note) throws JSONException {
         List<Note> notes = this.getAllNotes();
         notes.add(0, note);
-        this.put(NOTE_KEY, notes);
+        this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
     }
 
 
@@ -68,24 +58,29 @@ public class BulletinBoard extends ParseObject {
     }
 
 
+
     /**
      *
      * @return
      */
-    public String getName() {
-        return this.getString(BOARD_NAME);
+    public String getBoardName() {
+        return this.getString(ParseKeywords.BOARD_NAME);
     }
 
 
     /**
      *
-     * @return
+     * @return A list of the notes in this board
      */
     public List<Note> getAllNotes() {
         return this.getNoteArray();
     }
 
 
+    /**
+     *
+     * @return The number of notes in this board
+     */
     public int numNotes() {
         if (this.getNoteArray() == null) {
             return 0;
@@ -98,17 +93,22 @@ public class BulletinBoard extends ParseObject {
      *
      * @param index
      */
-    public void removeNote(int index) throws JSONException {
+    public void removeNote(int index) {
         List<Note> notes = this.getAllNotes();
         notes.remove(index);
-        this.put(NOTE_KEY, notes);
+        this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
     }
 
 
-
+    /**
+     *
+     * @param jsonBoard
+     * @return
+     * @throws JSONException
+     */
     public static BulletinBoard createFromJSON(JSONObject jsonBoard) throws JSONException {
-        BulletinBoard board = new BulletinBoard(jsonBoard.getString(BOARD_NAME));
-        JSONArray noteArray = jsonBoard.getJSONArray(NOTE_KEY);
+        BulletinBoard board = new BulletinBoard(jsonBoard.getString(ParseKeywords.BOARD_NAME));
+        JSONArray noteArray = jsonBoard.getJSONArray(ParseKeywords.BOARD_NOTE_ARRAY);
         for (int i = 0; i < noteArray.length(); ++i) {
             Note note = Note.createFromJSON(noteArray.getJSONObject(i));
             board.addNote(note);
@@ -117,6 +117,12 @@ public class BulletinBoard extends ParseObject {
     }
 
 
+    /**
+     *
+     * @param currentBoard
+     * @return
+     * @throws JSONException
+     */
     public static JSONObject writeToJSON(BulletinBoard currentBoard) throws JSONException {
         JSONObject personalBoard = new JSONObject();
         List<Note> notes = currentBoard.getAllNotes();
@@ -125,8 +131,8 @@ public class BulletinBoard extends ParseObject {
             JSONObject jsonNote = Note.writeToJSON(notes.get(i));
             noteArray.put(i, jsonNote);
         }
-        personalBoard.put(NOTE_KEY, noteArray);
-        personalBoard.put(BOARD_NAME, currentBoard.getName());
+        personalBoard.put(ParseKeywords.BOARD_NOTE_ARRAY, noteArray);
+        personalBoard.put(ParseKeywords.BOARD_NAME, currentBoard.getBoardName());
         return personalBoard;
     }
 
@@ -148,13 +154,38 @@ public class BulletinBoard extends ParseObject {
                 return false;
             }
         }
-        return this.getName().equals(otherBoard.getName()) &&
-               this.getId().equals(otherBoard.getId()) &&
-               (this.getLastUpdate().compareTo(otherBoard.getLastUpdate()) == 0);
+        return this.getBoardName().equals(otherBoard.getBoardName()) &&
+               this.getObjectId().equals(otherBoard.getObjectId()) &&
+               (this.getUpdatedAt().compareTo(otherBoard.getUpdatedAt()) == 0);
     }
 
 
+    /**
+     *
+     * @return
+     */
     private List<Note> getNoteArray() {
-        return (ArrayList<Note>) this.get(NOTE_KEY);
+        return (ArrayList<Note>) this.get(ParseKeywords.BOARD_NOTE_ARRAY);
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ParseKeywords.BOARD_NAME);
+        sb.append(": ");
+        sb.append(this.getBoardName());
+        List<Note> notes = this.getAllNotes();
+        for (int i = 0; i < notes.size(); ++i) {
+            if (i < notes.size() - 1) {
+                sb.append(System.getProperty("line.separator"));
+            }
+            sb.append(notes.get(i).toString());
+        }
+        return sb.toString();
     }
 }

@@ -1,6 +1,9 @@
 package application;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,50 +22,51 @@ import java.util.List;
 import application.DataDownload.BoardHolderSingleton;
 import application.DataDownload.DataDownloadReceiver;
 import application.DataDownload.DataDownloadService;
+import application.DataDownload.DataReceiver;
+import application.DataDownload.ParseKeywords;
 import application.model.BulletinBoard;
 import application.model.Note;
 import application.model.NoteModifier;
 
 /**
- * Created by alobb on 10/15/14.
+ * Created by alobb on 10/15/14 for ${PROJECT_NAME}.
  */
-public abstract class BoardController extends Activity implements NoteModifier, DataDownloadReceiver.Receiver {
+public abstract class BoardController extends Activity implements NoteModifier, DataReceiver, FragmentCallback {
 
+    // UI Elements
     private Button addNote;
     private Button addBoard;
     private ListView noteList;
-    private ListView boardList;
-    protected List<BulletinBoard> boards;
     private EditText newNoteText;
-    private EditText newBoardText;
+    private Note noteToEdit;
+
+    // Data
+    protected List<BulletinBoard> boards;
     protected BulletinBoard currentBoard;
+
     protected BoardAdapter boardAdapter;
     protected final String FILE_NAME = "currentBoard";
-    public final String PARSE_BOARDS = "BoardList";
-    protected final String BOARDS = "boards";
     protected final String NEW_BOARD_FLAG = "newBoard";
-    protected final String ALL_BOARD_FLAG = "allBoards";
     protected final String BOARD_INDEX_FLAG = "boardIndex";
-
     protected DataDownloadReceiver mReceiver;
 
 
-    private final View.OnClickListener clickListener = new View.OnClickListener() {
+    /**
+     * Click listener for the buttons on the main screen
+     */
+    private final View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.createNote:
+                case R.id.create_note:
                     createNote();
                     break;
-                case R.id.createBoard:
+                case R.id.create_board:
                     createNewBoard();
                     break;
             }
         }
     };
-    protected boolean newBoard = false;
-    protected boolean boardModified = false;
-    private static final int EDIT_NOTE = 1;
 
 
     protected void addBoard(BulletinBoard board) {
@@ -71,10 +75,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     public void createNewBoard() {
-        EditText title = (EditText) findViewById(R.id.newBoardText);
+        EditText title = (EditText) findViewById(R.id.new_board_text);
         if (!title.getText().toString().isEmpty()) {
             Intent i = new Intent(this, GroupBoardController.class);
-            i.putExtra(BulletinBoard.BOARD_NAME, title.getText().toString());
+            i.putExtra(ParseKeywords.BOARD_NAME, title.getText().toString());
             i.putExtra(this.NEW_BOARD_FLAG, true);
             startActivity(i);
             title.setText("");
@@ -83,12 +87,11 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     /**
-     *
+     * Creates a new note on the current board.  Will not create a note if the note EditText is empty.
      */
     private void createNote() {
         String text = this.newNoteText.getText().toString();
         if (!text.isEmpty()) {
-            this.boardModified = true;
             Note note = new Note(this.newNoteText.getText().toString());
             try {
                 this.currentBoard.addNote(note);
@@ -101,32 +104,23 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
+    /**
+     * Removes a note from the board and redraws the list of notes.
+     * @param index The index of the note to remove (Starting at 0)
+     */
     public void removeNote(int index) {
-        this.boardModified = true;
-        try {
-            this.currentBoard.removeNote(index);
-        } catch (JSONException e) {
-            Log.e("ERROR", e.getMessage(), e);
-        }
+        this.currentBoard.removeNote(index);
         this.boardAdapter.notifyDataSetChanged();
     }
 
 
     public void editNote(int index) {
-        Intent i = new Intent(this, EditNote.class);
-        try {
-            i.putExtra(NoteModifier.NOTE_VALUE, Note.writeToJSON(this.currentBoard.getNote(index)).toString());
-        } catch (JSONException e) {
-            Log.e("ERROR", e.getMessage(), e);
-            return;
-        }
-        i.putExtra(NoteModifier.NOTE_INDEX, index);
-        startActivityForResult(i, EDIT_NOTE);
-    }
-
-
-    protected boolean boardIsModified() {
-        return this.boardModified;
+        this.noteToEdit = this.currentBoard.getNote(index);
+        this.noteToEdit.setBeingEdited(true);
+        EditFragment editFragment = showEditFragment();
+        editFragment.setNoteText(this.noteToEdit.getText());
+        this.noteToEdit.setBeingEdited(true);
+        this.boardAdapter.notifyDataSetChanged();
     }
 
 
@@ -137,16 +131,57 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.board_view);
+        hideEditFragment();
         initBoards(getIntent().getExtras());
         this.boardAdapter = new BoardAdapter(this, R.layout.note, this.currentBoard);
-        this.newNoteText = (EditText) findViewById(R.id.newNoteText);
+        this.newNoteText = (EditText) findViewById(R.id.new_note_text);
         this.noteList = (ListView) findViewById(R.id.note_listview);
         this.noteList.setAdapter(boardAdapter);
-        this.addNote = (Button) findViewById(R.id.createNote);
-        this.addNote.setOnClickListener(this.clickListener);
-        this.addBoard = (Button) findViewById(R.id.createBoard);
-        this.addBoard.setOnClickListener(this.clickListener);
-        this.boardList = (ListView) findViewById(R.id.board_listview);
+        this.addNote = (Button) findViewById(R.id.create_note);
+        this.addNote.setOnClickListener(this.buttonClickListener);
+        this.addBoard = (Button) findViewById(R.id.create_board);
+        this.addBoard.setOnClickListener(this.buttonClickListener);
+    }
+
+
+    /**
+     *
+     */
+    private EditFragment showEditFragment() {
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        EditFragment fragment = (EditFragment) fm.findFragmentById(R.id.edit_fragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.show(fragment);
+        ft.commit();
+        return fragment;
+    }
+
+
+    /**
+     *
+     */
+    private void hideEditFragment() {
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ft.hide(fm.findFragmentById(R.id.edit_fragment));
+        ft.commit();
+    }
+
+
+    /**
+     *
+     * @param fragment The fragment that finished
+     */
+    public void fragmentFinished(Fragment fragment) {
+        if (fragment instanceof EditFragment) {
+            hideEditFragment();
+            this.noteToEdit.editText(((EditFragment) fragment).getNoteText());
+            this.noteToEdit.setBeingEdited(false);
+            this.boardAdapter.notifyDataSetChanged();
+            this.noteToEdit = null;
+        }
     }
 
 
@@ -174,6 +209,16 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        List<Note> currNotes = this.currentBoard.getAllNotes();
+        for (Note note : currNotes) {
+            note.setBeingEdited(false);
+        }
+    }
+
+
     /**
      *
      */
@@ -189,28 +234,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == EDIT_NOTE) {
-            if (resultCode == RESULT_OK) {
-                int index = data.getIntExtra(NoteModifier.NOTE_INDEX, -1);
-                if (index != -1) {
-                    this.boardModified = true;
-                    Note note = this.currentBoard.getNote(index);
-                    String newText = data.getStringExtra(NoteModifier.NOTE_VALUE);
-                    note.editText(newText);
-                    this.boardAdapter.notifyDataSetChanged();
-                }
-            }
-        }
-    }
-
-
-    @Override
     public void onReceiveResult(int resultCode, Bundle data) {
         switch (resultCode) {
             case DataDownloadService.STATUS_FINISHED:
-                List<BulletinBoard> newBoards = BoardHolderSingleton.getBoardHolder().getAllBoards();
-                this.boards = newBoards;
+                this.boards = BoardHolderSingleton.getBoardHolder().getAllBoards();
                 invalidateOptionsMenu();
         }
     }
@@ -226,11 +253,12 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         final int NEW_MENU_ID = Menu.FIRST + 1;
         if (this.boards != null) {
             for (int i = 0; i < this.boards.size(); ++i) {
-                menu.add(Menu.NONE, NEW_MENU_ID + i, i, this.boards.get(i).getName());
+                menu.add(Menu.NONE, NEW_MENU_ID + i, i, this.boards.get(i).getBoardName());
             }
         }
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -249,6 +277,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         if (id >= firstBoard && id <= lastBoard) {
             int boardIndex = id - (Menu.FIRST + 1);
             // They want to switch to the board at boardIndex in this.boards
+            BoardHolderSingleton.getBoardHolder().setBoards(this.boards);
             Intent i = new Intent(this, GroupBoardController.class);
             i.putExtra(this.BOARD_INDEX_FLAG, boardIndex);
             startActivity(i);

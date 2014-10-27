@@ -8,7 +8,7 @@ import android.os.ResultReceiver;
  * Created by alobb on 10/24/14.
  */
 public class DataDownloadReceiver extends ResultReceiver {
-    private Receiver mReceiver;
+    private DataReceiver mReceiver;
     public static final String RECEIVER = "RECEIVER";
 
 
@@ -24,14 +24,10 @@ public class DataDownloadReceiver extends ResultReceiver {
     }
 
 
-    public void setReceiver(Receiver receiver) {
+    public void setReceiver(DataReceiver receiver) {
         mReceiver = receiver;
     }
 
-
-    public interface Receiver {
-        public void onReceiveResult(int resultCode, Bundle resultData);
-    }
 
     @Override
     protected void onReceiveResult(int resultCode, Bundle resultData) {

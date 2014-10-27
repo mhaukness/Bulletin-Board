@@ -14,11 +14,13 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        >
+        android:hardwareAccelerated="true">
+        
         <activity
             android:name=".PersonalBoardController"
             android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,15 +29,10 @@
         </activity>
 
         <activity
-            android:name=".EditNote"
-            android:label="EditNote"
-            android:parentActivityName="application.PersonalBoardController">
-        </activity>
-
-        <activity
             android:name=".GroupBoardController"
             android:label="GroupBoardController"
-            android:parentActivityName="application.PersonalBoardController">
+            android:parentActivityName=".PersonalBoardController"
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
 
 
@@ -45,5 +42,8 @@
         </service>
     </application>
 
+    <!--<instrumentation-->
+        <!--android:name="android.test.InstrumentationTestRunner"-->
+        <!--android:targetPackage="application" />-->
 
 </manifest>

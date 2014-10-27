@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/board_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -11,7 +12,7 @@
 
     <!-- Set OnClickListener to trigger results when pressed -->
     <Button
-        android:id="@+id/createNote"
+        android:id="@+id/create_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create New Note" />
@@ -19,8 +20,15 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/newNoteText"
+        android:id="@+id/new_note_text"
         android:hint="Start typing a note!" />
+
+    <fragment
+        android:id="@+id/edit_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        class="application.EditFragment"
+        tools:layout="@layout/edit_note" />
 
     <ListView
         android:id="@+id/note_listview"
@@ -29,17 +37,17 @@
         android:layout_weight="1"
         android:layout_marginTop="20dp" />
 
-
     <Button
-        android:id="@+id/createBoard"
+        android:id="@+id/create_board"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create New Board" />
 
+
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/newBoardText"
+        android:id="@+id/new_board_text"
         android:hint="New Board Title"/>
 
     <ListView

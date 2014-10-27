@@ -19,11 +19,11 @@ public class NoteClickListener implements View.OnClickListener {
     public void onClick(View v) {
         Integer index = (Integer) v.getTag();
         switch (v.getId()) {
+            case R.id.edit_button:
+                activity.editNote(index);
+                break;
             case R.id.delete_button:
                 activity.removeNote(index);
-                break;
-            case R.id.note_textview:
-                activity.editNote(index);
                 break;
         }
     }

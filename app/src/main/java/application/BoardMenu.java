@@ -73,7 +73,7 @@ public class BoardMenu extends Activity {
         finish();
         setContentView(R.layout.board_menu);
 
-        this.createBoardButton = (Button) findViewById(R.id.createBoard);
+        this.createBoardButton = (Button) findViewById(R.id.create_board);
         this.createBoardButton.setOnClickListener(createBoardListener);
     }
 
