@@ -35,7 +35,7 @@ public class BulletinBoardTest extends AndroidTestCase {
 
     public void testConstructor() {
         BulletinBoard board = new BulletinBoard(NAME);
-        assertEquals(NAME, board.getName());
+        assertEquals(NAME, board.getBoardName());
         assertEquals(0, board.numNotes());
         assertTrue(board.getAllNotes().isEmpty());
     }

@@ -31,6 +31,7 @@ public class BoardAdapter extends ArrayAdapter<Note> {
     static class ViewHolder {
         protected TextView text;
         protected Button deleteButton;
+        protected Button editButton;
     }
 
 
@@ -44,6 +45,11 @@ public class BoardAdapter extends ArrayAdapter<Note> {
         } else {
             rowView = convertView;
         }
+        if (this.getItem(position).isBeingEdited()) {
+            rowView.setVisibility(View.GONE);
+        } else {
+            rowView.setVisibility(View.VISIBLE);
+        }
         final ViewHolder viewHolder = new ViewHolder();
         NoteClickListener clickListener = new NoteClickListener(this.activity);
 
@@ -55,6 +61,11 @@ public class BoardAdapter extends ArrayAdapter<Note> {
         viewHolder.deleteButton = (Button) rowView.findViewById(R.id.delete_button);
         viewHolder.deleteButton.setOnClickListener(clickListener);
         viewHolder.deleteButton.setTag(position);
+
+
+        viewHolder.editButton = (Button) rowView.findViewById(R.id.edit_button);
+        viewHolder.editButton.setOnClickListener(clickListener);
+        viewHolder.editButton.setTag(position);
 
         rowView.setTag(viewHolder);
         return rowView;

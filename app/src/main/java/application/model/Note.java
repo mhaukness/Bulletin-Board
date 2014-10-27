@@ -7,13 +7,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import application.DataDownload.DataDownloadService;
+import application.DataDownload.ParseKeywords;
 
 /**
  * Created by alobb on 9/28/14.
  */
-@ParseClassName("Note")
+@ParseClassName(ParseKeywords.NOTE_CLASS)
 public class Note extends ParseObject {
 
+    private boolean isBeingEdited = false;
 
     /**e
      * Create a new Note
@@ -52,6 +54,24 @@ public class Note extends ParseObject {
      */
     public void editText(String newText) {
         this.put(DataDownloadService.PARSE_NOTE_VALUE, newText);
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    public boolean isBeingEdited() {
+        return this.isBeingEdited;
+    }
+
+
+    /**
+     *
+     * @param newEditStatus
+     */
+    public void setBeingEdited(boolean newEditStatus) {
+        this.isBeingEdited = newEditStatus;
     }
 
 

@@ -7,6 +7,7 @@ import android.os.Handler;
 import application.DataDownload.BoardHolderSingleton;
 import application.DataDownload.DataDownloadReceiver;
 import application.DataDownload.DataDownloadService;
+import application.DataDownload.ParseKeywords;
 import application.model.BulletinBoard;
 
 /**
@@ -35,7 +36,7 @@ public class GroupBoardController extends BoardController {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(this.currentBoard.getName());
+        setTitle(this.currentBoard.getBoardName());
         this.boardAdapter.notifyDataSetChanged();
     }
 
@@ -44,8 +45,8 @@ public class GroupBoardController extends BoardController {
     protected void initBoards(Bundle extras) {
         super.initBoards(extras);
         if (extras != null) {
-            if (extras.containsKey(BulletinBoard.BOARD_NAME)) {
-                String name = extras.getString(BulletinBoard.BOARD_NAME);
+            if (extras.containsKey(ParseKeywords.BOARD_NAME)) {
+                String name = extras.getString(ParseKeywords.BOARD_NAME);
                 this.currentBoard = new BulletinBoard(name);
                 this.addBoard(this.currentBoard);
             }
@@ -57,5 +58,25 @@ public class GroupBoardController extends BoardController {
                 this.currentBoard = this.boards.get(extras.getInt(this.BOARD_INDEX_FLAG));
             }
         }
+    }
+
+
+    @Override
+    public void onReceiveResult(int resultCode, Bundle data) {
+        super.onReceiveResult(resultCode, data);
+        for (int i = 0; i < this.boards.size(); ++i) {
+            if (this.boards.get(i).getObjectId().equals(this.currentBoard.getObjectId())) {
+                this.currentBoard = this.boards.get(i);
+                this.boardAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.save();
     }
 }

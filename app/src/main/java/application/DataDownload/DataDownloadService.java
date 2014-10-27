@@ -21,10 +21,8 @@ import application.model.BulletinBoard;
  * Created by alobb on 10/16/14.
  */
 public class DataDownloadService extends IntentService {
-    public static final String PARSE_NOTE_CLASS = "Note";
     public static final String PARSE_NOTE_VALUE = "noteValue";
-    private final String PARSE_BOARDS_CLASS = "Board";
-    private final String PARSE_BOARD = "bulletinBoard";
+    private static final String PARSE_BOARD = "bulletinBoard";
     public static final String BOARD_NAME = "boardName";
     public static final String BOARD_INTENT = "boardValues";
     public static final int STATUS_FINISHED = 1;
@@ -78,7 +76,7 @@ public class DataDownloadService extends IntentService {
      * @throws ParseException
      */
     private List<BulletinBoard> readBoards() throws ParseException, JSONException {
-        ParseQuery<BulletinBoard> boardQuery = ParseQuery.getQuery(PARSE_BOARDS_CLASS);
+        ParseQuery<BulletinBoard> boardQuery = ParseQuery.getQuery(ParseKeywords.BOARD_CLASS);
         boardQuery.include(BulletinBoard.NOTE_KEY);
         List<BulletinBoard> boards = boardQuery.find();
         if (boards == null) {
@@ -93,9 +91,9 @@ public class DataDownloadService extends IntentService {
      * @param board
      */
     public void saveEdit(BulletinBoard board) throws ParseException, JSONException {
-        ParseQuery<ParseObject> boardQuery = ParseQuery.getQuery(PARSE_BOARDS_CLASS);
-        ParseObject parseBoard = boardQuery.get(board.getId());
-        if (parseBoard.getUpdatedAt().after(board.getLastUpdate())) {
+        ParseQuery<ParseObject> boardQuery = ParseQuery.getQuery(ParseKeywords.BOARD_CLASS);
+        ParseObject parseBoard = boardQuery.get(board.getObjectId());
+        if (parseBoard.getUpdatedAt().after(board.getUpdatedAt())) {
             // Board has been updated before it was synced on this side, do not save the changes
         } else {
             board.saveInBackground();
