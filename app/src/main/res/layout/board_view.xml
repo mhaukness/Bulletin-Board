@@ -23,6 +23,13 @@
         android:id="@+id/new_note_text"
         android:hint="Start typing a note!" />
 
+    <fragment
+        android:id="@+id/edit_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        class="application.EditFragment"
+        tools:layout="@layout/edit_note" />
+
     <ListView
         android:id="@+id/note_listview"
         android:layout_width="match_parent"
@@ -36,12 +43,6 @@
         android:layout_height="wrap_content"
         android:text="Create New Board" />
 
-    <fragment
-        android:id="@+id/edit_fragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        class="application.EditFragment"
-        tools:layout="@layout/edit_note" />
 
     <EditText
         android:layout_width="wrap_content"

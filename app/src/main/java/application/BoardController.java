@@ -43,8 +43,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     private EditText newBoardText;
     private Note noteToEdit;
 
-
+    // Data
+    protected List<BulletinBoard> boards;
     protected BulletinBoard currentBoard;
+
     protected BoardAdapter boardAdapter;
     protected final String FILE_NAME = "currentBoard";
     public final String PARSE_BOARDS = "BoardList";
@@ -53,7 +55,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     protected final String ALL_BOARD_FLAG = "allBoards";
     protected final String BOARD_INDEX_FLAG = "boardIndex";
     protected DataDownloadReceiver mReceiver;
-    protected List<BulletinBoard> boards;
 
 
     private final View.OnClickListener buttonClickListener = new View.OnClickListener() {
@@ -69,9 +70,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             }
         }
     };
-    protected boolean newBoard = false;
-    protected boolean boardModified = false;
-    private static final int EDIT_NOTE = 1;
 
 
     protected void addBoard(BulletinBoard board) {
@@ -97,7 +95,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     private void createNote() {
         String text = this.newNoteText.getText().toString();
         if (!text.isEmpty()) {
-            this.boardModified = true;
             Note note = new Note(this.newNoteText.getText().toString());
             try {
                 this.currentBoard.addNote(note);
@@ -111,7 +108,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     public void removeNote(int index) {
-        this.boardModified = true;
         this.currentBoard.removeNote(index);
         this.boardAdapter.notifyDataSetChanged();
     }
@@ -124,11 +120,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         editFragment.setNoteText(this.noteToEdit.getText());
         this.noteToEdit.setBeingEdited(true);
         this.boardAdapter.notifyDataSetChanged();
-    }
-
-
-    protected boolean boardIsModified() {
-        return this.boardModified;
     }
 
 
@@ -160,6 +151,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         EditFragment fragment = (EditFragment) fm.findFragmentById(R.id.edit_fragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.show(fragment);
         ft.commit();
         return fragment;
@@ -172,6 +164,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     private void hideEditFragment() {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         ft.hide(fm.findFragmentById(R.id.edit_fragment));
         ft.commit();
     }
@@ -183,12 +176,11 @@ public abstract class BoardController extends Activity implements NoteModifier, 
      */
     public void fragmentFinished(Fragment fragment) {
         if (fragment instanceof EditFragment) {
-            List<Note> oldNotes = this.currentBoard.getAllNotes();
+            hideEditFragment();
             this.noteToEdit.editText(((EditFragment) fragment).getNoteText());
             this.noteToEdit.setBeingEdited(false);
             this.boardAdapter.notifyDataSetChanged();
             this.noteToEdit = null;
-            hideEditFragment();
         }
     }
 
@@ -242,23 +234,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == EDIT_NOTE) {
-            if (resultCode == RESULT_OK) {
-                int index = data.getIntExtra(NoteModifier.NOTE_INDEX, -1);
-                if (index != -1) {
-                    this.boardModified = true;
-                    Note note = this.currentBoard.getNote(index);
-                    String newText = data.getStringExtra(NoteModifier.NOTE_VALUE);
-                    note.editText(newText);
-                    this.boardAdapter.notifyDataSetChanged();
-                }
-            }
-        }
-    }
-
-
-    @Override
     public void onReceiveResult(int resultCode, Bundle data) {
         switch (resultCode) {
             case DataDownloadService.STATUS_FINISHED:
@@ -285,6 +260,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -302,6 +278,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         if (id >= firstBoard && id <= lastBoard) {
             int boardIndex = id - (Menu.FIRST + 1);
             // They want to switch to the board at boardIndex in this.boards
+            BoardHolderSingleton.getBoardHolder().setBoards(this.boards);
             Intent i = new Intent(this, GroupBoardController.class);
             i.putExtra(this.BOARD_INDEX_FLAG, boardIndex);
             startActivity(i);

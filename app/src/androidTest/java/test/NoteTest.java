@@ -9,7 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import application.App;
-import application.DataDownload.DataDownloadService;
+import application.DataDownload.ParseKeywords;
 import application.model.BulletinBoard;
 import application.model.Note;
 
@@ -28,7 +28,7 @@ public class NoteTest extends AndroidTestCase {
         ParseObject.registerSubclass(Note.class);
         Parse.initialize(getContext(), App.getApplicationId(), App.getClientKey());
         JSON_NOTE = new JSONObject();
-        JSON_NOTE.put(DataDownloadService.PARSE_NOTE_VALUE, OLD_TEXT);
+        JSON_NOTE.put(ParseKeywords.PARSE_NOTE_VALUE, OLD_TEXT);
     }
 
 

@@ -10,8 +10,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,15 +19,8 @@ import application.model.BulletinBoard;
  * Created by alobb on 10/16/14.
  */
 public class DataDownloadService extends IntentService {
-    public static final String PARSE_NOTE_VALUE = "noteValue";
-    private static final String PARSE_BOARD = "bulletinBoard";
-    public static final String BOARD_NAME = "boardName";
-    public static final String BOARD_INTENT = "boardValues";
     public static final int STATUS_FINISHED = 1;
-    public static final String SAVE_NEW_FLAG = "saveNew";
-    public static final String SAVE_EDIT_FLAG = "saveEdit";
-    public static final String BOARD_TO_SAVE = "boardToSave";
-    public static final String BOARD_ID = "objectId";
+    public static final String SAVE_FLAG = "save";
 
 
     public DataDownloadService() {
@@ -40,16 +31,11 @@ public class DataDownloadService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Bundle bundle = new Bundle();
-        if (intent.getBooleanExtra(SAVE_NEW_FLAG, false)) {
-            BulletinBoard boardToSave = BoardHolderSingleton.getBoardHolder().getBoardToSave();
-            this.saveNewData(boardToSave);
-        } else if (intent.getBooleanExtra(SAVE_EDIT_FLAG, false)) {
+        if (intent.getBooleanExtra(SAVE_FLAG, false)) {
             BulletinBoard boardToSave = BoardHolderSingleton.getBoardHolder().getBoardToSave();
             try {
-                this.saveEdit(boardToSave);
+                this.save(boardToSave);
             } catch (ParseException e) {
-                Log.e("ERROR", e.getMessage(), e);
-            } catch (JSONException e) {
                 Log.e("ERROR", e.getMessage(), e);
             }
         } else {
@@ -62,8 +48,6 @@ public class DataDownloadService extends IntentService {
                 receiver.send(STATUS_FINISHED, bundle);
             } catch (ParseException e) {
                 Log.e("ERROR", e.getMessage(), e);
-            } catch (JSONException e) {
-                Log.e("ERROR", e.getMessage(), e);
             }
         }
         this.stopSelf();
@@ -75,9 +59,9 @@ public class DataDownloadService extends IntentService {
      * @return
      * @throws ParseException
      */
-    private List<BulletinBoard> readBoards() throws ParseException, JSONException {
+    private List<BulletinBoard> readBoards() throws ParseException {
         ParseQuery<BulletinBoard> boardQuery = ParseQuery.getQuery(ParseKeywords.BOARD_CLASS);
-        boardQuery.include(BulletinBoard.NOTE_KEY);
+        boardQuery.include(ParseKeywords.BOARD_NOTE_ARRAY);
         List<BulletinBoard> boards = boardQuery.find();
         if (boards == null) {
             boards = new ArrayList<BulletinBoard>();
@@ -90,22 +74,18 @@ public class DataDownloadService extends IntentService {
      * Save an edited board to Parse.com
      * @param board
      */
-    public void saveEdit(BulletinBoard board) throws ParseException, JSONException {
-        ParseQuery<ParseObject> boardQuery = ParseQuery.getQuery(ParseKeywords.BOARD_CLASS);
-        ParseObject parseBoard = boardQuery.get(board.getObjectId());
-        if (parseBoard.getUpdatedAt().after(board.getUpdatedAt())) {
-            // Board has been updated before it was synced on this side, do not save the changes
-        } else {
+    public void save(BulletinBoard board) throws ParseException {
+        if (board.getCreatedAt() == null) {
+            // Board is new and has not been saved yet
             board.saveInBackground();
+        } else {
+            ParseQuery<ParseObject> boardQuery = ParseQuery.getQuery(ParseKeywords.BOARD_CLASS);
+            ParseObject parseBoard = boardQuery.get(board.getObjectId());
+            if (parseBoard.getUpdatedAt().after(board.getUpdatedAt())) {
+                // Board has been updated before it was synced on this side, do not save the changes
+            } else {
+                board.saveInBackground();
+            }
         }
-    }
-
-
-    /**
-     * Save a new Bulletin Board to Parse.com
-     * @param board
-     */
-    public void saveNewData(BulletinBoard board) {
-        board.saveInBackground();
     }
 }

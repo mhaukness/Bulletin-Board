@@ -17,7 +17,7 @@ import application.model.NoteModifier;
  */
 public class BoardAdapter extends ArrayAdapter<Note> {
     private final Context context;
-    private final BulletinBoard board;
+    private BulletinBoard board;
     private final NoteModifier activity;
 
 
@@ -93,8 +93,8 @@ public class BoardAdapter extends ArrayAdapter<Note> {
     }
 
 
-    @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
+    public void setNewBoard(BulletinBoard newBoard) {
+        this.board = newBoard;
+        this.notifyDataSetChanged();
     }
 }

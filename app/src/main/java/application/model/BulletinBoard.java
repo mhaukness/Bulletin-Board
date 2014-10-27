@@ -18,7 +18,7 @@ import application.DataDownload.ParseKeywords;
 @ParseClassName(ParseKeywords.BOARD_CLASS)
 public class BulletinBoard extends ParseObject {
 
-    public static final String NOTE_KEY = "notes";
+    private boolean isModified = false;
 
 
     public BulletinBoard() {
@@ -33,7 +33,7 @@ public class BulletinBoard extends ParseObject {
     public BulletinBoard(String name) {
         super();
         this.put(ParseKeywords.BOARD_NAME, name);
-        this.put(NOTE_KEY, new ArrayList<Note>());
+        this.put(ParseKeywords.BOARD_NOTE_ARRAY, new ArrayList<Note>());
     }
 
 
@@ -44,7 +44,7 @@ public class BulletinBoard extends ParseObject {
     public void addNote(Note note) throws JSONException {
         List<Note> notes = this.getAllNotes();
         notes.add(0, note);
-        this.put(NOTE_KEY, notes);
+        this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
     }
 
 
@@ -56,6 +56,7 @@ public class BulletinBoard extends ParseObject {
     public Note getNote(int index) {
         return this.getNoteArray().get(index);
     }
+
 
 
     /**
@@ -95,7 +96,7 @@ public class BulletinBoard extends ParseObject {
     public void removeNote(int index) {
         List<Note> notes = this.getAllNotes();
         notes.remove(index);
-        this.put(NOTE_KEY, notes);
+        this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
     }
 
 
@@ -107,7 +108,7 @@ public class BulletinBoard extends ParseObject {
      */
     public static BulletinBoard createFromJSON(JSONObject jsonBoard) throws JSONException {
         BulletinBoard board = new BulletinBoard(jsonBoard.getString(ParseKeywords.BOARD_NAME));
-        JSONArray noteArray = jsonBoard.getJSONArray(NOTE_KEY);
+        JSONArray noteArray = jsonBoard.getJSONArray(ParseKeywords.BOARD_NOTE_ARRAY);
         for (int i = 0; i < noteArray.length(); ++i) {
             Note note = Note.createFromJSON(noteArray.getJSONObject(i));
             board.addNote(note);
@@ -130,7 +131,7 @@ public class BulletinBoard extends ParseObject {
             JSONObject jsonNote = Note.writeToJSON(notes.get(i));
             noteArray.put(i, jsonNote);
         }
-        personalBoard.put(NOTE_KEY, noteArray);
+        personalBoard.put(ParseKeywords.BOARD_NOTE_ARRAY, noteArray);
         personalBoard.put(ParseKeywords.BOARD_NAME, currentBoard.getBoardName());
         return personalBoard;
     }
@@ -164,7 +165,7 @@ public class BulletinBoard extends ParseObject {
      * @return
      */
     private List<Note> getNoteArray() {
-        return (ArrayList<Note>) this.get(NOTE_KEY);
+        return (ArrayList<Note>) this.get(ParseKeywords.BOARD_NOTE_ARRAY);
     }
 
 
@@ -175,7 +176,8 @@ public class BulletinBoard extends ParseObject {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Name: ");
+        sb.append(ParseKeywords.BOARD_NAME);
+        sb.append(": ");
         sb.append(this.getBoardName());
         List<Note> notes = this.getAllNotes();
         for (int i = 0; i < notes.size(); ++i) {

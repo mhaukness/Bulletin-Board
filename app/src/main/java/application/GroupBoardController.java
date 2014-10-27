@@ -18,16 +18,12 @@ public class GroupBoardController extends BoardController {
 
     @Override
     public void save() {
-        if (this.boardIsModified()) {
+        if (this.currentBoard.isDirty()) {
             Intent serviceIntent = new Intent(this, DataDownloadService.class);
             mReceiver = new DataDownloadReceiver(new Handler());
             mReceiver.setReceiver(this);
             BoardHolderSingleton.getBoardHolder().setBoardToSave(this.currentBoard);
-            if (this.newBoard) {
-                serviceIntent.putExtra(DataDownloadService.SAVE_NEW_FLAG, true);
-            } else {
-                serviceIntent.putExtra(DataDownloadService.SAVE_EDIT_FLAG, true);
-            }
+            serviceIntent.putExtra(DataDownloadService.SAVE_FLAG, true);
             this.startService(serviceIntent);
         }
     }
@@ -45,14 +41,14 @@ public class GroupBoardController extends BoardController {
     protected void initBoards(Bundle extras) {
         super.initBoards(extras);
         if (extras != null) {
-            if (extras.containsKey(ParseKeywords.BOARD_NAME)) {
-                String name = extras.getString(ParseKeywords.BOARD_NAME);
-                this.currentBoard = new BulletinBoard(name);
-                this.addBoard(this.currentBoard);
-            }
             if (extras.containsKey(this.NEW_BOARD_FLAG)) {
-                this.boardModified = true;
-                this.newBoard = true;
+                if (extras.containsKey(ParseKeywords.BOARD_NAME)) {
+                    String name = extras.getString(ParseKeywords.BOARD_NAME);
+                    this.currentBoard = new BulletinBoard(name);
+                    this.addBoard(this.currentBoard);
+                } else {
+                    throw new IllegalArgumentException("A new board requires a name");
+                }
             }
             if (extras.containsKey(this.BOARD_INDEX_FLAG)) {
                 this.currentBoard = this.boards.get(extras.getInt(this.BOARD_INDEX_FLAG));
@@ -67,7 +63,7 @@ public class GroupBoardController extends BoardController {
         for (int i = 0; i < this.boards.size(); ++i) {
             if (this.boards.get(i).getObjectId().equals(this.currentBoard.getObjectId())) {
                 this.currentBoard = this.boards.get(i);
-                this.boardAdapter.notifyDataSetChanged();
+                this.boardAdapter.setNewBoard(this.currentBoard);
                 break;
             }
         }
