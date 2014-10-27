@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import org.json.JSONException;
@@ -30,17 +29,15 @@ import application.model.Note;
 import application.model.NoteModifier;
 
 /**
- * Created by alobb on 10/15/14.
+ * Created by alobb on 10/15/14 for ${PROJECT_NAME}.
  */
 public abstract class BoardController extends Activity implements NoteModifier, DataReceiver, FragmentCallback {
 
     // UI Elements
-    private LinearLayout boardView;
     private Button addNote;
     private Button addBoard;
     private ListView noteList;
     private EditText newNoteText;
-    private EditText newBoardText;
     private Note noteToEdit;
 
     // Data
@@ -49,14 +46,14 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
     protected BoardAdapter boardAdapter;
     protected final String FILE_NAME = "currentBoard";
-    public final String PARSE_BOARDS = "BoardList";
-    protected final String BOARDS = "boards";
     protected final String NEW_BOARD_FLAG = "newBoard";
-    protected final String ALL_BOARD_FLAG = "allBoards";
     protected final String BOARD_INDEX_FLAG = "boardIndex";
     protected DataDownloadReceiver mReceiver;
 
 
+    /**
+     * Click listener for the buttons on the main screen
+     */
     private final View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -90,7 +87,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     /**
-     *
+     * Creates a new note on the current board.  Will not create a note if the note EditText is empty.
      */
     private void createNote() {
         String text = this.newNoteText.getText().toString();
@@ -107,6 +104,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
+    /**
+     * Removes a note from the board and redraws the list of notes.
+     * @param index The index of the note to remove (Starting at 0)
+     */
     public void removeNote(int index) {
         this.currentBoard.removeNote(index);
         this.boardAdapter.notifyDataSetChanged();
@@ -132,7 +133,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         setContentView(R.layout.board_view);
         hideEditFragment();
         initBoards(getIntent().getExtras());
-        this.boardView = (LinearLayout) findViewById(R.id.board_view);
         this.boardAdapter = new BoardAdapter(this, R.layout.note, this.currentBoard);
         this.newNoteText = (EditText) findViewById(R.id.new_note_text);
         this.noteList = (ListView) findViewById(R.id.note_listview);
@@ -172,7 +172,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
     /**
      *
-     * @param fragment
+     * @param fragment The fragment that finished
      */
     public void fragmentFinished(Fragment fragment) {
         if (fragment instanceof EditFragment) {
@@ -237,8 +237,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     public void onReceiveResult(int resultCode, Bundle data) {
         switch (resultCode) {
             case DataDownloadService.STATUS_FINISHED:
-                List<BulletinBoard> newBoards = BoardHolderSingleton.getBoardHolder().getAllBoards();
-                this.boards = newBoards;
+                this.boards = BoardHolderSingleton.getBoardHolder().getAllBoards();
                 invalidateOptionsMenu();
         }
     }
