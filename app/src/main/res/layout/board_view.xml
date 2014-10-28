@@ -37,18 +37,7 @@
         android:layout_weight="1"
         android:layout_marginTop="20dp" />
 
-    <Button
-        android:id="@+id/create_board"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create New Board" />
 
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/new_board_text"
-        android:hint="New Board Title"/>
 
     <ListView
         android:id="@+id/board_listview"

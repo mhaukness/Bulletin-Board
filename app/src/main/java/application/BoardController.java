@@ -75,6 +75,11 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     public void createNewBoard() {
+
+        Intent i = new Intent(this, CreateBoard.class);
+        i.putExtra(this.NEW_BOARD_FLAG, true);
+        startActivity(i);
+        /*
         EditText title = (EditText) findViewById(R.id.new_board_text);
         if (!title.getText().toString().isEmpty()) {
             Intent i = new Intent(this, GroupBoardController.class);
@@ -82,7 +87,9 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             i.putExtra(this.NEW_BOARD_FLAG, true);
             startActivity(i);
             title.setText("");
-        }
+        }*/
+
+
     }
 
 
@@ -139,8 +146,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         this.noteList.setAdapter(boardAdapter);
         this.addNote = (Button) findViewById(R.id.create_note);
         this.addNote.setOnClickListener(this.buttonClickListener);
-        this.addBoard = (Button) findViewById(R.id.create_board);
-        this.addBoard.setOnClickListener(this.buttonClickListener);
     }
 
 
@@ -271,8 +276,12 @@ public abstract class BoardController extends Activity implements NoteModifier, 
                 break;
             case R.id.refresh:
                 refreshData();
+                break;
+            case R.id.create_board:
+                createNewBoard();
+                break;
         }
-        int firstBoard = Menu.FIRST + 1;
+        /*int firstBoard = Menu.FIRST + 1;
         int lastBoard = Menu.FIRST + this.boards.size();
         if (id >= firstBoard && id <= lastBoard) {
             int boardIndex = id - (Menu.FIRST + 1);
@@ -281,7 +290,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             Intent i = new Intent(this, GroupBoardController.class);
             i.putExtra(this.BOARD_INDEX_FLAG, boardIndex);
             startActivity(i);
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 }

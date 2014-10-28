@@ -10,6 +10,10 @@
     <item android:id="@+id/refresh"
         android:title="Refresh"
         android:menuCategory="system"
-        android:orderInCategory="1"
+        android:orderInCategory="3"
         android:showAsAction="never" />
+    <item android:id="@+id/create_board"
+        android:title="Create Board"
+        android:menuCategory="system"
+        android:orderInCategory="1"/>
 </menu>
