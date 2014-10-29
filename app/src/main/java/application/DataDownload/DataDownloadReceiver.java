@@ -6,10 +6,12 @@ import android.os.ResultReceiver;
 
 /**
  * Created by alobb on 10/24/14.
+ * This class is used by {@link application.DataDownload.DataDownloadService} to call a method in
+ *  the current activity that the service has finished saving or loading the boards.
  */
 public class DataDownloadReceiver extends ResultReceiver {
     private DataReceiver mReceiver;
-    public static final String RECEIVER = "RECEIVER";
+    public static final String RECEIVER_FLAG = "receiver";
 
 
     /**
@@ -24,11 +26,20 @@ public class DataDownloadReceiver extends ResultReceiver {
     }
 
 
+    /**
+     * Sets the receiver for our custom receiver
+     * @param receiver The new receiver
+     */
     public void setReceiver(DataReceiver receiver) {
         mReceiver = receiver;
     }
 
 
+    /**
+     *
+     * @param resultCode
+     * @param resultData
+     */
     @Override
     protected void onReceiveResult(int resultCode, Bundle resultData) {
         if (mReceiver != null) {

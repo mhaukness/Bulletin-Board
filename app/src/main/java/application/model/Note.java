@@ -10,14 +10,21 @@ import application.DataDownload.ParseKeywords;
 
 /**
  * Created by alobb on 9/28/14.
+ * This class contains the definition of a note object; it contains the text contained in the note.
+ * It extends ParseObject so that it is easy to save and load the data from Parse.com.
  */
 @ParseClassName(ParseKeywords.NOTE_CLASS)
 public class Note extends ParseObject {
 
+    /**
+     * A boolean that corresponds to if the {@link application.model.Note Note} is currently being
+     *  edited in the application.
+     */
     private boolean isBeingEdited = false;
 
-    /**e
-     * Create a new Note
+
+    /**
+     *  Required for ParseObject subclass; nothing needs to happen here.
      */
     public Note() {
         // Required when extending ParseObject
@@ -25,22 +32,25 @@ public class Note extends ParseObject {
 
 
     /**
-     *
-     * @param text
+     * Create a new Note with the given text.  This does not save the Note to the device or Parse.com;
+     *  this must be handled by the board that contains this note.
+     * @param text The text of this note
      */
     public Note(String text) {
         this.put(ParseKeywords.PARSE_NOTE_VALUE, text);
     }
 
 
+    /**
+     * @return The text on this board
+     */
     public String getText() {
         return this.getString(ParseKeywords.PARSE_NOTE_VALUE);
     }
 
 
     /**
-     *
-     * @return
+     * @return {@link com.parse.ParseObject#getObjectId()}
      */
     public String getId() {
         return this.getObjectId();
@@ -59,8 +69,7 @@ public class Note extends ParseObject {
 
 
     /**
-     *
-     * @return
+     * @return Whether or not this note is being edited
      */
     public boolean isBeingEdited() {
         return this.isBeingEdited;
@@ -68,8 +77,8 @@ public class Note extends ParseObject {
 
 
     /**
-     *
-     * @param newEditStatus
+     * Sets the edit status of this note.
+     * @param newEditStatus Whether or not the note is currently being edited
      */
     public void setBeingEdited(boolean newEditStatus) {
         this.isBeingEdited = newEditStatus;
@@ -89,11 +98,24 @@ public class Note extends ParseObject {
     }
 
 
+    /**
+     *
+     * @param noteObject
+     * @return
+     * @throws JSONException
+     */
     public static Note createFromJSON(JSONObject noteObject) throws JSONException {
         Note note = new Note(noteObject.getString(ParseKeywords.PARSE_NOTE_VALUE));
         return note;
     }
 
+
+    /**
+     *
+     * @param note
+     * @return
+     * @throws JSONException
+     */
     public static JSONObject writeToJSON(Note note) throws JSONException {
         JSONObject jsonNote = new JSONObject();
         jsonNote.put(ParseKeywords.PARSE_NOTE_VALUE, note.getText());
@@ -101,6 +123,10 @@ public class Note extends ParseObject {
     }
 
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

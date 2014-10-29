@@ -46,6 +46,7 @@ public class GroupBoardController extends BoardController {
                     String name = extras.getString(ParseKeywords.BOARD_NAME);
                     this.currentBoard = new BulletinBoard(name);
                     this.addBoard(this.currentBoard);
+                    this.save();
                 } else {
                     throw new IllegalArgumentException("A new board requires a name");
                 }
@@ -54,6 +55,7 @@ public class GroupBoardController extends BoardController {
                 this.currentBoard = this.boards.get(extras.getInt(this.BOARD_INDEX_FLAG));
             }
         }
+        this.invalidateOptionsMenu();
     }
 
 

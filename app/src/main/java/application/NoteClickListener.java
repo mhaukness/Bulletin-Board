@@ -2,8 +2,6 @@ package application;
 
 import android.view.View;
 
-import application.model.NoteModifier;
-
 /**
  * Created by alobb on 10/9/14.
  */

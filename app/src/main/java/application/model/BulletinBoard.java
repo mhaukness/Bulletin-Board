@@ -14,21 +14,23 @@ import application.DataDownload.ParseKeywords;
 
 /**
  * Created by alobb on 9/28/14.
+ * This class contains the definition of a board object; it contains the list of notes that show up
+ *  on the board.  It extends ParseObject so that it is easy to save and load the data from Parse.com.
  */
 @ParseClassName(ParseKeywords.BOARD_CLASS)
 public class BulletinBoard extends ParseObject {
 
-    private boolean isModified = false;
 
-
-    public BulletinBoard() {
-        // Required for ParseObject subclass
-    }
+    /**
+     * Required for ParseObject subclass; nothing needs to happen here.
+     */
+    public BulletinBoard() {}
 
 
     /**
-     * Create a new Bulletin Board
-     * @param name
+     * Creates a new Bulletin Board.  Note that this does not save the board to Parse or the device;
+     *  that needs to be handled by the activity that creates the board.
+     * @param name The name of the new bulletin board
      */
     public BulletinBoard(String name) {
         super();
@@ -38,10 +40,11 @@ public class BulletinBoard extends ParseObject {
 
 
     /**
-     *
+     * Add a note to the board at the beginning of the board (The beginning is the most chronologically
+     *  recent).
      * @param note
      */
-    public void addNote(Note note) throws JSONException {
+    public void addNote(Note note) {
         List<Note> notes = this.getAllNotes();
         notes.add(0, note);
         this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
@@ -49,9 +52,8 @@ public class BulletinBoard extends ParseObject {
 
 
     /**
-     *
-     * @param index
-     * @return
+     * @param index The index of the note to get
+     * @return A {@link application.model.Note Note}
      */
     public Note getNote(int index) {
         return this.getNoteArray().get(index);
@@ -60,8 +62,7 @@ public class BulletinBoard extends ParseObject {
 
 
     /**
-     *
-     * @return
+     * @return The name of the board
      */
     public String getBoardName() {
         return this.getString(ParseKeywords.BOARD_NAME);

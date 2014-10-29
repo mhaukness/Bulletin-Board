@@ -2,4 +2,9 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Margin between elements per Android Design Guidelines. -->
+    <dimen name="element_margin">8dp</dimen>
+
+    <dimen name="edit_note_fragment_height">250dip</dimen>
 </resources>

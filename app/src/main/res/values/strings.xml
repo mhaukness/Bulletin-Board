@@ -2,7 +2,10 @@
 <resources>
 
     <string name="app_name">BulletinBoard</string>
-    <string name="hello_world">Hello world!</string>
+
+    <string name="note_delete_button">X</string>
+    <string name="note_edit_button">Edit</string>
+    <string name="note_save_button">Save</string>
     <string name="action_settings">Settings</string>
 
 </resources>

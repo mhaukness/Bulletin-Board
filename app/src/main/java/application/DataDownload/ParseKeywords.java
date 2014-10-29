@@ -2,6 +2,7 @@ package application.DataDownload;
 
 /**
  * Created by alobb on 10/24/14.
+ * This class contains the words that are used on our backend storage in Parse.com.
  */
 public class ParseKeywords {
 

@@ -7,7 +7,6 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,42 +14,42 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import org.json.JSONException;
-
 import java.util.List;
 
 import application.DataDownload.BoardHolderSingleton;
 import application.DataDownload.DataDownloadReceiver;
 import application.DataDownload.DataDownloadService;
 import application.DataDownload.DataReceiver;
-import application.DataDownload.ParseKeywords;
 import application.model.BulletinBoard;
 import application.model.Note;
-import application.model.NoteModifier;
 
 /**
- * Created by alobb on 10/15/14 for ${PROJECT_NAME}.
+ * Created by alobb on 10/15/14.
+ * This class contains the definition of a base controller for the board.  It should be overridden
+ *  to provide definitions for the abstract methods based on the given situation.
  */
-public abstract class BoardController extends Activity implements NoteModifier, DataReceiver, FragmentCallback {
+public abstract class BoardController extends Activity implements NoteModifier, DataReceiver,
+        FragmentCallback {
 
+    /////////////////////////////
     // UI Elements
+    /////////////////////////////
     private Button addNote;
-    private Button addBoard;
     private ListView noteList;
     private EditText newNoteText;
     private Note noteToEdit;
 
+    /////////////////////////////
     // Data
+    /////////////////////////////
     protected List<BulletinBoard> boards;
     protected BulletinBoard currentBoard;
 
+    /////////////////////////////
+    // Controller elements
+    /////////////////////////////
     protected BoardAdapter boardAdapter;
-    protected final String FILE_NAME = "currentBoard";
-    protected final String NEW_BOARD_FLAG = "newBoard";
-    protected final String BOARD_INDEX_FLAG = "boardIndex";
     protected DataDownloadReceiver mReceiver;
-
-
     /**
      * Click listener for the buttons on the main screen
      */
@@ -68,28 +67,29 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         }
     };
 
+    /////////////////////////////
+    // Intent Flags
+    /////////////////////////////
+    protected static final String NEW_BOARD_FLAG = "newBoard";
+    protected static final String BOARD_INDEX_FLAG = "boardIndex";
 
+
+    /**
+     * Add a board to the current list of boards
+     * @param board The board to add
+     */
     protected void addBoard(BulletinBoard board) {
         this.boards.add(board);
     }
 
 
+    /**
+     * Create a new board by starting the activity at {@link application.CreateBoard}
+     */
     public void createNewBoard() {
-
         Intent i = new Intent(this, CreateBoard.class);
-        i.putExtra(this.NEW_BOARD_FLAG, true);
+        i.putExtra(BoardController.NEW_BOARD_FLAG, true);
         startActivity(i);
-        /*
-        EditText title = (EditText) findViewById(R.id.new_board_text);
-        if (!title.getText().toString().isEmpty()) {
-            Intent i = new Intent(this, GroupBoardController.class);
-            i.putExtra(ParseKeywords.BOARD_NAME, title.getText().toString());
-            i.putExtra(this.NEW_BOARD_FLAG, true);
-            startActivity(i);
-            title.setText("");
-        }*/
-
-
     }
 
 
@@ -100,11 +100,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         String text = this.newNoteText.getText().toString();
         if (!text.isEmpty()) {
             Note note = new Note(this.newNoteText.getText().toString());
-            try {
-                this.currentBoard.addNote(note);
-            } catch (JSONException e) {
-                Log.e("ERROR", e.getMessage(), e);
-            }
+            this.currentBoard.addNote(note);
             this.newNoteText.setText("");
             this.boardAdapter.notifyDataSetChanged();
         }
@@ -121,6 +117,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
+    /**
+     * Begin editing a note by displaying the {@link application.EditFragment}.
+     * @param index The index of the note
+     */
     public void editNote(int index) {
         this.noteToEdit = this.currentBoard.getNote(index);
         this.noteToEdit.setBeingEdited(true);
@@ -150,7 +150,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     /**
-     *
+     * Display the {@link application.EditFragment} on the current activity.
      */
     private EditFragment showEditFragment() {
         FragmentManager fm = getFragmentManager();
@@ -164,19 +164,18 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     /**
-     *
+     * Hide the {@link application.EditFragment} on the current activity.
      */
     private void hideEditFragment() {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         ft.hide(fm.findFragmentById(R.id.edit_fragment));
         ft.commit();
     }
 
 
     /**
-     *
+     * A callback that is called when a fragment finishes its work
      * @param fragment The fragment that finished
      */
     public void fragmentFinished(Fragment fragment) {
@@ -209,7 +208,8 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
     private void refreshData() {
         Intent serviceIntent = new Intent(this, DataDownloadService.class);
-        serviceIntent.putExtra(DataDownloadReceiver.RECEIVER, mReceiver);
+        serviceIntent.putExtra(DataDownloadReceiver.RECEIVER_FLAG, mReceiver);
+        serviceIntent.putExtra(DataDownloadService.LOAD_FLAG, true);
         this.startService(serviceIntent);
     }
 
@@ -241,7 +241,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     @Override
     public void onReceiveResult(int resultCode, Bundle data) {
         switch (resultCode) {
-            case DataDownloadService.STATUS_FINISHED:
+            case DataDownloadService.LOAD_FINISHED:
                 this.boards = BoardHolderSingleton.getBoardHolder().getAllBoards();
                 invalidateOptionsMenu();
         }
@@ -254,6 +254,9 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        if (this.boards == null) {
+            return false;
+        }
         getMenuInflater().inflate(R.menu.main_screen, menu);
         final int NEW_MENU_ID = Menu.FIRST + 1;
         if (this.boards != null) {
@@ -281,7 +284,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
                 createNewBoard();
                 break;
         }
-        /*int firstBoard = Menu.FIRST + 1;
+        int firstBoard = Menu.FIRST + 1;
         int lastBoard = Menu.FIRST + this.boards.size();
         if (id >= firstBoard && id <= lastBoard) {
             int boardIndex = id - (Menu.FIRST + 1);
@@ -290,7 +293,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             Intent i = new Intent(this, GroupBoardController.class);
             i.putExtra(this.BOARD_INDEX_FLAG, boardIndex);
             startActivity(i);
-        }*/
+        }
         return super.onOptionsItemSelected(item);
     }
 }

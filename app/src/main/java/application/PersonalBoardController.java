@@ -19,18 +19,30 @@ import application.model.BulletinBoard;
 
 /**
  * Created by alobb on 10/15/14.
+ * This class defines a controller for a personal bulletin board.  This means that the data in this
+ *  board will be saved locally; it will not be saved to Parse.com.
  */
 public class PersonalBoardController extends BoardController {
 
+    /**
+     * The file name that the personal board is stored to.
+     */
+    private static final String SAVE_FILE_NAME = "personalBoard";
 
+
+    /**
+     * Initializes the personal board by trying to load it from a file; if the file is not found or
+     *  any exceptions are thrown, a new, blank board is created and displayed.
+     * @param extras The bundle of extras passed when the activity was started.
+     */
     @Override
     protected void initBoards(Bundle extras) {
         super.initBoards(extras);
-        File file = new File(this.getFilesDir(), FILE_NAME);
+        File file = new File(this.getFilesDir(), SAVE_FILE_NAME);
         if (file.exists()) {
             FileInputStream fis = null;
             try {
-                fis = this.openFileInput(FILE_NAME);
+                fis = this.openFileInput(SAVE_FILE_NAME);
                 String jString = null;
                 FileChannel fc = fis.getChannel();
                 MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
@@ -42,7 +54,9 @@ public class PersonalBoardController extends BoardController {
                 this.currentBoard = new BulletinBoard("Personal Board");
             } finally {
                 try {
-                    fis.close();
+                    if (fis != null) {
+                        fis.close();
+                    }
                 } catch (IOException e) {
                     Log.e("ERROR", e.getMessage(), e);
                 }
@@ -53,10 +67,13 @@ public class PersonalBoardController extends BoardController {
     }
 
 
+    /**
+     * Saves this board to the device.
+     */
     @Override
     public void save() {
         try {
-            FileOutputStream fos = openFileOutput(this.FILE_NAME, MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput(PersonalBoardController.SAVE_FILE_NAME, MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             JSONObject array = BulletinBoard.writeToJSON(this.currentBoard);
             osw.write(array.toString());

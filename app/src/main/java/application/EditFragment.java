@@ -37,6 +37,7 @@ public class EditFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_note, container, false);
+
         this.saveButton = (Button) view.findViewById(R.id.save_edit_button);
         this.noteText = (EditText) view.findViewById(R.id.note_edit_text);
         this.saveButton.setOnClickListener(buttonClickListener);
