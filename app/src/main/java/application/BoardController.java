@@ -33,6 +33,8 @@ import application.model.Note;
  */
 public abstract class BoardController extends Activity implements NoteModifier, DataReceiver,
         FragmentCallback {
+    // TODO: Hack. remove at first opportunity when parse library is fixed.
+    private static int boardClickedOn;
 
     //region UI Elements
     private EditText newNoteText;
@@ -230,21 +232,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-        if (requestCode == LOGIN_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-
-            } else if (resultCode == RESULT_CANCELED) {
-
-            }
-        }
-    }
-
-
-
     /**
      * A callback that is called when a fragment finishes its work
      * @param fragment The fragment that finished
@@ -367,10 +354,18 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             // They want to switch to the board at boardIndex in this.boards
             BoardHolderSingleton.getBoardHolder().setBoards(this.boards);
             Intent i = new Intent(this, GroupBoardDispatchActivity.class);
-            i.putExtra(BoardController.BOARD_INDEX_FLAG, boardIndex);
+            Bundle b = new Bundle();
+            b.putInt(BOARD_INDEX_FLAG, boardIndex);
+            i.putExtras(b);
             startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
     // endregion
+
+
+    // TODO: Hack. remove at first opportunity when parse library is fixed.
+    public static int getBoardClickedOn() {
+        return BoardController.boardClickedOn;
+    }
 }

@@ -55,8 +55,14 @@ public class GroupBoardController extends BoardController {
     @Override
     protected void initBoards(Bundle extras) {
         super.initBoards(extras);
-        if (extras != null) {
-            if (extras.containsKey(this.NEW_BOARD_FLAG)) {
+        if (extras == null || (!extras.containsKey(NEW_BOARD_FLAG) && !extras.containsKey(NEW_BOARD_FLAG))) {
+            // TODO: Hack. remove at first opportunity when parse library is fixed.
+            extras = new Bundle();
+            extras.putInt(BoardController.BOARD_INDEX_FLAG, BoardController.getBoardClickedOn());
+//            throw new IllegalArgumentException("A group board controller requires either a new " +
+//                    "board name or an index of a group board");
+        }
+            if (extras.containsKey(NEW_BOARD_FLAG)) {
                 if (extras.containsKey(ParseKeywords.BOARD_NAME)) {
                     String name = extras.getString(ParseKeywords.BOARD_NAME);
                     this.currentBoard = new BulletinBoard(name);
@@ -66,10 +72,9 @@ public class GroupBoardController extends BoardController {
                     throw new IllegalArgumentException("A new board requires a name");
                 }
             }
-            if (extras.containsKey(this.BOARD_INDEX_FLAG)) {
-                this.currentBoard = this.boards.get(extras.getInt(this.BOARD_INDEX_FLAG));
+            if (extras.containsKey(BOARD_INDEX_FLAG)) {
+                this.currentBoard = this.boards.get(extras.getInt(BOARD_INDEX_FLAG));
             }
-        }
         this.invalidateOptionsMenu();
     }
 
