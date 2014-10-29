@@ -91,8 +91,8 @@ public class BulletinBoard extends ParseObject {
 
 
     /**
-     *
-     * @param index
+     * Remove a note at the given index
+     * @param index The index fo the note to remove
      */
     public void removeNote(int index) {
         List<Note> notes = this.getAllNotes();

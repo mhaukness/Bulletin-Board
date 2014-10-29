@@ -2,10 +2,8 @@ package application;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 
 import application.DataDownload.BoardHolderSingleton;
-import application.DataDownload.DataDownloadReceiver;
 import application.DataDownload.DataDownloadService;
 import application.DataDownload.ParseKeywords;
 import application.model.BulletinBoard;
@@ -24,9 +22,7 @@ public class GroupBoardController extends BoardController {
     @Override
     public void save() {
         if (this.currentBoard.isDirty()) {
-            Intent serviceIntent = new Intent(this, DataDownloadService.class);
-            mReceiver = new DataDownloadReceiver(new Handler());
-            mReceiver.setReceiver(this);
+            Intent serviceIntent = this.createServiceIntent();
             BoardHolderSingleton.getBoardHolder().setBoardToSave(this.currentBoard);
             serviceIntent.putExtra(DataDownloadService.SAVE_FLAG, true);
             this.startService(serviceIntent);

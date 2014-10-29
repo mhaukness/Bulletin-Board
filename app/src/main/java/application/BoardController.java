@@ -109,6 +109,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             this.currentBoard.addNote(note);
             this.newNoteText.setText("");
             this.boardAdapter.notifyDataSetChanged();
+            this.save();
         }
     }
 
@@ -120,6 +121,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     public void removeNote(int index) {
         this.currentBoard.removeNote(index);
         this.boardAdapter.notifyDataSetChanged();
+        this.save();
     }
 
 
@@ -143,10 +145,14 @@ public abstract class BoardController extends Activity implements NoteModifier, 
      */
     public void finishEditNote(Fragment fragment) {
         hideEditFragment();
-        this.noteToEdit.setText(((EditFragment) fragment).getNoteText());
-        this.noteToEdit.setBeingEdited(false);
-        this.boardAdapter.notifyDataSetChanged();
-        this.noteToEdit = null;
+        String newText = ((EditFragment) fragment).getNoteText();
+        if (!newText.equals(this.noteToEdit.getText())) {
+            this.noteToEdit.setText(newText);
+            this.noteToEdit.setBeingEdited(false);
+            this.boardAdapter.notifyDataSetChanged();
+            this.noteToEdit = null;
+            this.save();
+        }
     }
 
 
@@ -188,6 +194,15 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
+    protected Intent createServiceIntent() {
+        Intent i = new Intent(this, DataDownloadService.class);
+        mReceiver = new DataDownloadReceiver(new Handler());
+        mReceiver.setReceiver(this);
+        i.putExtra(DataDownloadReceiver.RECEIVER_FLAG, mReceiver);
+        return i;
+    }
+
+
     /**
      * Initialize the list of boards
      */
@@ -220,7 +235,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
                 Toast.makeText(this, "Data has been refreshed", Toast.LENGTH_SHORT).show();
                 break;
             case DataDownloadService.SAVE_FINISHED:
-                Toast.makeText(this, "Your data is successfully saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Your data has been successfully saved", Toast.LENGTH_SHORT).show();
                 break;
             case DataDownloadService.LOAD_FAILED:
                 Toast.makeText(this, "The data failed to load", Toast.LENGTH_SHORT).show();
