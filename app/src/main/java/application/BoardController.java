@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -27,27 +28,25 @@ import application.model.Note;
  * Created by alobb on 10/15/14.
  * This class contains the definition of a base controller for the board.  It should be overridden
  *  to provide definitions for the abstract methods based on the given situation.
+ * Note that this file is divided into regions; these regions are used to categorize methods and
+ *  variables so that it is easy to find what the developer needs quickly.
  */
 public abstract class BoardController extends Activity implements NoteModifier, DataReceiver,
         FragmentCallback {
 
-    /////////////////////////////
-    // UI Elements
-    /////////////////////////////
-    private Button addNote;
-    private ListView noteList;
+    //region UI Elements
     private EditText newNoteText;
     private Note noteToEdit;
+    //endregion
 
-    /////////////////////////////
-    // Data
-    /////////////////////////////
+
+    //region Data
     protected List<BulletinBoard> boards;
     protected BulletinBoard currentBoard;
+    //endregion
 
-    /////////////////////////////
-    // Controller elements
-    /////////////////////////////
+
+    //region Controller Elements
     protected BoardAdapter boardAdapter;
     protected DataDownloadReceiver mReceiver;
     /**
@@ -66,14 +65,16 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             }
         }
     };
+    //endregion
 
-    /////////////////////////////
-    // Intent Flags
-    /////////////////////////////
+
+    //region Intent Flags
     protected static final String NEW_BOARD_FLAG = "newBoard";
     protected static final String BOARD_INDEX_FLAG = "boardIndex";
+    //endregion
 
 
+    //region Board Modification
     /**
      * Add a board to the current list of boards
      * @param board The board to add
@@ -91,8 +92,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         i.putExtra(BoardController.NEW_BOARD_FLAG, true);
         startActivity(i);
     }
+    //endregion
 
 
+    //region Note Modification
     /**
      * Creates a new note on the current board.  Will not create a note if the note EditText is empty.
      */
@@ -118,10 +121,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     /**
-     * Begin editing a note by displaying the {@link application.EditFragment}.
+     * Begin editing a note by displaying {@link application.EditFragment}.
      * @param index The index of the note
      */
-    public void editNote(int index) {
+    public void startEditNote(int index) {
         this.noteToEdit = this.currentBoard.getNote(index);
         this.noteToEdit.setBeingEdited(true);
         EditFragment editFragment = showEditFragment();
@@ -131,21 +134,16 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
-    /////////////////////////////
-    // Lifecycle Methods
-    /////////////////////////////
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.board_view);
+    /**
+     * Finish editing the note by hiding {@link application.EditFragment} and saving the new text.
+     * @param fragment The fragment that is handling the editing of a note
+     */
+    public void finishEditNote(Fragment fragment) {
         hideEditFragment();
-        initBoards(getIntent().getExtras());
-        this.boardAdapter = new BoardAdapter(this, R.layout.note, this.currentBoard);
-        this.newNoteText = (EditText) findViewById(R.id.new_note_text);
-        this.noteList = (ListView) findViewById(R.id.note_listview);
-        this.noteList.setAdapter(boardAdapter);
-        this.addNote = (Button) findViewById(R.id.create_note);
-        this.addNote.setOnClickListener(this.buttonClickListener);
+        this.noteToEdit.setText(((EditFragment) fragment).getNoteText());
+        this.noteToEdit.setBeingEdited(false);
+        this.boardAdapter.notifyDataSetChanged();
+        this.noteToEdit = null;
     }
 
 
@@ -172,6 +170,64 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         ft.hide(fm.findFragmentById(R.id.edit_fragment));
         ft.commit();
     }
+    // endregion
+
+
+    //region Data Integrity
+    /**
+     * Refresh the data by starting {@link application.DataDownload.DataDownloadService}
+     */
+    private void refreshData() {
+        Intent serviceIntent = new Intent(this, DataDownloadService.class);
+        serviceIntent.putExtra(DataDownloadReceiver.RECEIVER_FLAG, mReceiver);
+        serviceIntent.putExtra(DataDownloadService.LOAD_FLAG, true);
+        this.startService(serviceIntent);
+    }
+
+
+    /**
+     * Initialize the list of boards
+     */
+    protected void initBoards(Bundle extras) {
+        this.boards = BoardHolderSingleton.getBoardHolder().getAllBoards();
+    }
+
+
+    /**
+     * Save the board in whatever method deemed appropriate by the class that implements this.
+     */
+    public abstract void save();
+    //endregion
+
+
+    //region Callbacks
+    /**
+     * This function is called when {@link application.DataDownload.DataDownloadService} is finished
+     *  with whatever task it was given.  If it finished loading the boards, then they will now
+     *  be shown in the options menu.
+     * @param resultCode The code sent by {@link application.DataDownload.DataDownloadService}
+     * @param data The bundle sent by {@link application.DataDownload.DataDownloadService}
+     */
+    @Override
+    public void onReceiveResult(int resultCode, Bundle data) {
+        switch (resultCode) {
+            case DataDownloadService.LOAD_FINISHED:
+                this.boards = BoardHolderSingleton.getBoardHolder().getAllBoards();
+                invalidateOptionsMenu();
+                Toast.makeText(this, "Data has been refreshed", Toast.LENGTH_SHORT).show();
+                break;
+            case DataDownloadService.SAVE_FINISHED:
+                Toast.makeText(this, "Your data is successfully saved", Toast.LENGTH_SHORT).show();
+                break;
+            case DataDownloadService.LOAD_FAILED:
+                Toast.makeText(this, "The data failed to load", Toast.LENGTH_SHORT).show();
+                break;
+            case DataDownloadService.SAVE_FAILED:
+                Toast.makeText(this, "Your data failed to save", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
 
 
     /**
@@ -180,15 +236,36 @@ public abstract class BoardController extends Activity implements NoteModifier, 
      */
     public void fragmentFinished(Fragment fragment) {
         if (fragment instanceof EditFragment) {
-            hideEditFragment();
-            this.noteToEdit.editText(((EditFragment) fragment).getNoteText());
-            this.noteToEdit.setBeingEdited(false);
-            this.boardAdapter.notifyDataSetChanged();
-            this.noteToEdit = null;
+            finishEditNote(fragment);
         }
+    }
+    //endregion
+
+
+    //region Lifecycle
+    /**
+     * Set up the display and initialize the boards for this controller
+     * @param savedInstanceState The saved state of this activity
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.board_view);
+        hideEditFragment();
+        initBoards(getIntent().getExtras());
+        this.boardAdapter = new BoardAdapter(this, R.layout.note, this.currentBoard);
+        this.newNoteText = (EditText) findViewById(R.id.new_note_text);
+
+        ListView noteList = (ListView) findViewById(R.id.note_listview);
+        noteList.setAdapter(boardAdapter);
+        Button addNote = (Button) findViewById(R.id.create_note);
+        addNote.setOnClickListener(this.buttonClickListener);
     }
 
 
+    /**
+     * Refresh the data when this activity is resumed
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -198,6 +275,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
+    /**
+     * Save the data when the activity is paused and set the service receiver to null to avoid
+     *  leaking memory.
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -206,14 +287,9 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
-    private void refreshData() {
-        Intent serviceIntent = new Intent(this, DataDownloadService.class);
-        serviceIntent.putExtra(DataDownloadReceiver.RECEIVER_FLAG, mReceiver);
-        serviceIntent.putExtra(DataDownloadService.LOAD_FLAG, true);
-        this.startService(serviceIntent);
-    }
-
-
+    /**
+     * Make sure that no notes are still set to being edited.
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -222,35 +298,15 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             note.setBeingEdited(false);
         }
     }
+    //endregion
 
 
+    // region Action Bar
     /**
-     *
+     * Add the other boards to the menu if they are not already on there
+     * @param menu The menu to add items to
+     * @return true so that the menu is created
      */
-    protected void initBoards(Bundle extras) {
-        this.boards = BoardHolderSingleton.getBoardHolder().getAllBoards();
-    }
-
-
-    /**
-     *
-     */
-    public abstract void save();
-
-
-    @Override
-    public void onReceiveResult(int resultCode, Bundle data) {
-        switch (resultCode) {
-            case DataDownloadService.LOAD_FINISHED:
-                this.boards = BoardHolderSingleton.getBoardHolder().getAllBoards();
-                invalidateOptionsMenu();
-        }
-    }
-
-
-    /////////////////////////////
-    // Action Bar Methods
-    /////////////////////////////
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -268,6 +324,11 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
+    /**
+     * This function is called when an item in the action bar is pressed
+     * @param item The item that was clicked on
+     * @return {@link android.app.Activity#onOptionsItemSelected(android.view.MenuItem)}
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -291,9 +352,10 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             // They want to switch to the board at boardIndex in this.boards
             BoardHolderSingleton.getBoardHolder().setBoards(this.boards);
             Intent i = new Intent(this, GroupBoardController.class);
-            i.putExtra(this.BOARD_INDEX_FLAG, boardIndex);
+            i.putExtra(BoardController.BOARD_INDEX_FLAG, boardIndex);
             startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
+    // endregion
 }

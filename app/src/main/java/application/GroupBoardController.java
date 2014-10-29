@@ -12,10 +12,15 @@ import application.model.BulletinBoard;
 
 /**
  * Created by alobb on 10/15/14.
+ * This class acts as a controller for all boards that are stored in Parse.com and subsequently can
+ *  be seen by a group of people.
  */
 public class GroupBoardController extends BoardController {
 
 
+    /**
+     * Saves the board currently showing into Parse.com
+     */
     @Override
     public void save() {
         if (this.currentBoard.isDirty()) {
@@ -29,6 +34,11 @@ public class GroupBoardController extends BoardController {
     }
 
 
+    /**
+     * @see application.BoardController#onCreate(android.os.Bundle)
+     * This function also sets the title of the activity to be the current board name
+     * @param savedInstanceState The saved state of this activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +47,11 @@ public class GroupBoardController extends BoardController {
     }
 
 
+    /**
+     * Initializes the board from the list of boards, unless it is a new board; in that case, the
+     *  new board is created and saved into Parse right away.
+     * @param extras The intent data sent when this activity was created
+     */
     @Override
     protected void initBoards(Bundle extras) {
         super.initBoards(extras);
@@ -59,6 +74,11 @@ public class GroupBoardController extends BoardController {
     }
 
 
+    /**
+     * @see application.BoardController#onReceiveResult(int, android.os.Bundle)
+     * @param resultCode The code sent by {@link application.DataDownload.DataDownloadService}
+     * @param data The bundle sent by {@link application.DataDownload.DataDownloadService}
+     */
     @Override
     public void onReceiveResult(int resultCode, Bundle data) {
         super.onReceiveResult(resultCode, data);
@@ -69,12 +89,5 @@ public class GroupBoardController extends BoardController {
                 break;
             }
         }
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        this.save();
     }
 }

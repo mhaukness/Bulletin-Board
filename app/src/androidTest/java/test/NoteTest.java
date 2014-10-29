@@ -43,7 +43,7 @@ public class NoteTest extends AndroidTestCase {
     public void testEdit() {
         Note note = new Note(OLD_TEXT);
         assertEquals(OLD_TEXT, note.getText());
-        note.editText(NEW_TEXT);
+        note.setText(NEW_TEXT);
         assertEquals(NEW_TEXT, note.getText());
     }
 
@@ -51,7 +51,7 @@ public class NoteTest extends AndroidTestCase {
     public void testEditSame() {
         Note note = new Note(OLD_TEXT);
         assertEquals(OLD_TEXT, note.getText());
-        note.editText(OLD_TEXT);
+        note.setText(OLD_TEXT);
         assertEquals(OLD_TEXT, note.getText());
     }
 

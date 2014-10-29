@@ -61,7 +61,7 @@ public class Note extends ParseObject {
      *
      * @param newText
      */
-    public void editText(String newText) {
+    public void setText(String newText) {
         if (!this.getText().equals(newText)) {
             this.put(ParseKeywords.PARSE_NOTE_VALUE, newText);
         }
