@@ -71,6 +71,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     //region Intent Flags
     protected static final String NEW_BOARD_FLAG = "newBoard";
     protected static final String BOARD_INDEX_FLAG = "boardIndex";
+    private static final int LOGIN_REQUEST = 0;
     //endregion
 
 
@@ -229,6 +230,20 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == LOGIN_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+
+            } else if (resultCode == RESULT_CANCELED) {
+
+            }
+        }
+    }
+
+
 
     /**
      * A callback that is called when a fragment finishes its work
@@ -351,7 +366,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             int boardIndex = id - (Menu.FIRST + 1);
             // They want to switch to the board at boardIndex in this.boards
             BoardHolderSingleton.getBoardHolder().setBoards(this.boards);
-            Intent i = new Intent(this, GroupBoardController.class);
+            Intent i = new Intent(this, GroupBoardDispatchActivity.class);
             i.putExtra(BoardController.BOARD_INDEX_FLAG, boardIndex);
             startActivity(i);
         }
