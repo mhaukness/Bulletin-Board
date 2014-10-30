@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+
 import java.util.List;
 
 import application.DataDownload.BoardHolderSingleton;
@@ -73,7 +75,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     //region Intent Flags
     protected static final String NEW_BOARD_FLAG = "newBoard";
     protected static final String BOARD_INDEX_FLAG = "boardIndex";
-    private static final int LOGIN_REQUEST = 0;
+    private static final String REFRESH_DATA = "refreshData";
     //endregion
 
 
@@ -88,7 +90,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
 
 
     /**
-     * Create a new board by starting the activity at {@link application.CreateBoard}
+     * Create a new board by starting the activity at {@link CreateBoard}
      */
     public void createNewBoard() {
         Intent i = new Intent(this, CreateBoard.class);
@@ -335,6 +337,12 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         if (this.boards != null) {
             for (int i = 0; i < this.boards.size(); ++i) {
                 menu.add(Menu.NONE, NEW_MENU_ID + i, i, this.boards.get(i).getBoardName());
+            }
+        }
+        ParseUser boardCreator = this.currentBoard.getCreatedBy();
+        if (boardCreator != null && ParseUser.getCurrentUser() != null) {
+            if (boardCreator == ParseUser.getCurrentUser()) {
+                // Add board options menu
             }
         }
         return true;

@@ -31,13 +31,14 @@
         <activity
             android:name=".GroupBoardController"
             android:label="GroupBoardController"
-            android:launchMode="standard"
+            android:launchMode="singleInstance"
             android:parentActivityName=".PersonalBoardController"
             android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <activity android:name=".CreateBoard"
             android:label="CreateBoard"
-            android:launchMode="singleInstance"
+            android:launchMode="standard"
+            android:noHistory="true"
             android:parentActivityName=".PersonalBoardController"
             android:windowSoftInputMode="stateAlwaysHidden"/>
 

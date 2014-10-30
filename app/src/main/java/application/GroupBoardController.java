@@ -73,22 +73,4 @@ public class GroupBoardController extends BoardController {
             }
         this.invalidateOptionsMenu();
     }
-
-
-    /**
-     * @see application.BoardController#onReceiveResult(int, android.os.Bundle)
-     * @param resultCode The code sent by {@link application.DataDownload.DataDownloadService}
-     * @param data The bundle sent by {@link application.DataDownload.DataDownloadService}
-     */
-    @Override
-    public void onReceiveResult(int resultCode, Bundle data) {
-        super.onReceiveResult(resultCode, data);
-        for (int i = 0; i < this.boards.size(); ++i) {
-            if (this.boards.get(i).getObjectId().equals(this.currentBoard.getObjectId())) {
-                this.currentBoard = this.boards.get(i);
-                this.boardAdapter.setNewBoard(this.currentBoard);
-                break;
-            }
-        }
-    }
 }

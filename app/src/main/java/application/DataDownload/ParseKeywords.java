@@ -30,4 +30,8 @@ public class ParseKeywords {
      * Key of the field that contains the value of a Note in Parse.com
      */
     public static final String PARSE_NOTE_VALUE = "noteValue";
+
+
+    public static final String CREATED_BY = "createdBy";
+
 }

@@ -1,7 +1,13 @@
 package application.model;
 
+import android.util.Log;
+
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +40,13 @@ public class BulletinBoard extends ParseObject {
      */
     public BulletinBoard(String name) {
         super();
+        ParseUser currUser = ParseUser.getCurrentUser();
+        if (currUser == null) {
+            // A personal board is being created
+        } else {
+            ParseRelation<ParseObject> relation = this.getRelation(ParseKeywords.CREATED_BY);
+            relation.add(currUser);
+        }
         this.put(ParseKeywords.BOARD_NAME, name);
         this.put(ParseKeywords.BOARD_NOTE_ARRAY, new ArrayList<Note>());
     }
@@ -59,6 +72,23 @@ public class BulletinBoard extends ParseObject {
         return this.getNoteArray().get(index);
     }
 
+
+    /**
+     * Get the Parse user object that created this Board.
+     * Note that this function returns null if the board is a personal board that is not saved to
+     *  Parse.com
+     * @return The creator of the board
+     */
+    public ParseUser getCreatedBy() {
+        ParseRelation<ParseUser> createdByRelation = this.getRelation(ParseKeywords.CREATED_BY);
+        ParseQuery query = createdByRelation.getQuery();
+        try {
+            return (ParseUser) query.getFirst();
+        } catch (ParseException e) {
+            Log.e("ERROR", e.getMessage(), e);
+            return null;
+        }
+    }
 
 
     /**
