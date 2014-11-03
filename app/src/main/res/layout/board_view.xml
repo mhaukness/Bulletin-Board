@@ -34,7 +34,7 @@
         tools:layout="@layout/edit_note" />
 
     <ListView
-        android:id="@+id/note_listview"
+        android:id="@+id/note_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

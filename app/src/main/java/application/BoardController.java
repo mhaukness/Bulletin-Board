@@ -275,7 +275,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         this.boardAdapter = new BoardAdapter(this, R.layout.note, this.currentBoard);
         this.newNoteText = (EditText) findViewById(R.id.new_note_text);
 
-        ListView noteList = (ListView) findViewById(R.id.note_listview);
+        ListView noteList = (ListView) findViewById(R.id.note_list);
         noteList.setAdapter(boardAdapter);
         Button addNote = (Button) findViewById(R.id.create_note);
         addNote.setOnClickListener(this.buttonClickListener);
