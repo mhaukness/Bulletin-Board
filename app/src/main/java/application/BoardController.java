@@ -339,10 +339,14 @@ public abstract class BoardController extends Activity implements NoteModifier, 
                 menu.add(Menu.NONE, NEW_MENU_ID + i, i, this.boards.get(i).getBoardName());
             }
         }
-        ParseUser boardCreator = this.currentBoard.getCreatedBy();
-        if (boardCreator != null && ParseUser.getCurrentUser() != null) {
-            if (boardCreator == ParseUser.getCurrentUser()) {
-                // Add board options menu
+        List<ParseUser> moderators = this.currentBoard.getModerators();
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (moderators != null && currentUser != null) {
+            for (int i = 0; i < moderators.size(); ++i) {
+                if (moderators.get(i).getObjectId().equals(currentUser.getObjectId())) {
+                    // Add board options menu
+                    menu.add(Menu.NONE, NEW_MENU_ID + this.boards.size(), this.boards.size(), "Board Settings");
+                }
             }
         }
         return true;
@@ -361,8 +365,6 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_settings:
-                break;
             case R.id.refresh:
                 refreshData();
                 break;
@@ -380,6 +382,12 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             Bundle b = new Bundle();
             b.putInt(BOARD_INDEX_FLAG, boardIndex);
             i.putExtras(b);
+            startActivity(i);
+        }
+        if (id == Menu.FIRST + this.boards.size() + 1) {
+            // Board Settings Menu
+            Intent i = new Intent(this, BoardSettingsController.class);
+            BoardHolderSingleton.getBoardHolder().setBoardToSave(this.currentBoard);
             startActivity(i);
         }
         return super.onOptionsItemSelected(item);

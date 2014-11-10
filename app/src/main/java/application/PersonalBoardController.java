@@ -51,7 +51,7 @@ public class PersonalBoardController extends BoardController {
                 this.currentBoard = BulletinBoard.createFromJSON(boardArray);
             } catch (Exception e) {
                 Log.e("ERROR", e.getMessage(), e);
-                this.currentBoard = new BulletinBoard("Personal Board");
+                this.currentBoard = BulletinBoard.createPersonalBoard("Personal Board");
             } finally {
                 try {
                     if (fis != null) {

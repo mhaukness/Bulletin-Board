@@ -40,7 +40,7 @@ public class BoardAdapter extends ArrayAdapter<Note> {
      * This class is used to hold the views that are shown in an individual note row.
      */
     static class ViewHolder {
-        protected TextView text;
+        protected TextView user;
         protected Button deleteButton;
         protected Button editButton;
     }
@@ -69,13 +69,13 @@ public class BoardAdapter extends ArrayAdapter<Note> {
 
         this.setNoteClickListener(viewHolder);
         this.setTags(viewHolder, convertView, position);
-        viewHolder.text.setText(this.board.getNote(position).getText());
+        viewHolder.user.setText(this.board.getNote(position).getText());
 
         Resources resources = this.getContext().getResources();
         if (this.getItem(position).isBeingEdited()) {
-            viewHolder.text.setBackgroundColor(resources.getColor(R.color.edit_background));
+            viewHolder.user.setBackgroundColor(resources.getColor(R.color.edit_background));
         } else {
-            viewHolder.text.setBackgroundColor(resources.getColor(R.color.white));
+            viewHolder.user.setBackgroundColor(resources.getColor(R.color.white));
         }
 
         return convertView;
@@ -90,7 +90,7 @@ public class BoardAdapter extends ArrayAdapter<Note> {
     private void initializeViewHolder(ViewHolder viewHolder, View rowView) {
         viewHolder.deleteButton = (Button) rowView.findViewById(R.id.delete_button);
         viewHolder.editButton = (Button) rowView.findViewById(R.id.edit_button);
-        viewHolder.text = (TextView) rowView.findViewById(R.id.note_textview);
+        viewHolder.user = (TextView) rowView.findViewById(R.id.note_textview);
     }
 
 
@@ -100,7 +100,7 @@ public class BoardAdapter extends ArrayAdapter<Note> {
      */
     private void setNoteClickListener(ViewHolder viewHolder) {
         NoteClickListener clickListener = new NoteClickListener(this.activity);
-        viewHolder.text.setOnClickListener(clickListener);
+        viewHolder.user.setOnClickListener(clickListener);
         viewHolder.deleteButton.setOnClickListener(clickListener);
         viewHolder.editButton.setOnClickListener(clickListener);
     }
@@ -113,7 +113,7 @@ public class BoardAdapter extends ArrayAdapter<Note> {
      * @param position The position in the list
      */
     private void setTags(ViewHolder viewHolder, View rowView, int position) {
-        viewHolder.text.setTag(position);
+        viewHolder.user.setTag(position);
         viewHolder.deleteButton.setTag(position);
         viewHolder.editButton.setTag(position);
         rowView.setTag(viewHolder);

@@ -61,7 +61,7 @@ public class GroupBoardController extends BoardController {
             if (extras.containsKey(NEW_BOARD_FLAG)) {
                 if (extras.containsKey(ParseKeywords.BOARD_NAME)) {
                     String name = extras.getString(ParseKeywords.BOARD_NAME);
-                    this.currentBoard = new BulletinBoard(name);
+                    this.currentBoard = BulletinBoard.createGroupBoard(name);
                     this.addBoard(this.currentBoard);
                     this.save();
                 } else {

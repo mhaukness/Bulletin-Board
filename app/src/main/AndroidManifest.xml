@@ -57,6 +57,9 @@
         <activity android:name=".GroupBoardDispatchActivity"
             android:label="GroupDispatch"/>
 
+        <activity android:name=".BoardSettingsController"
+            android:label="Board Settings"/>
+
         <service
             android:name=".DataDownload.DataDownloadService"
             android:label="DataDownloadService">

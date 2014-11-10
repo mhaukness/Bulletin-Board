@@ -32,6 +32,6 @@ public class ParseKeywords {
     public static final String PARSE_NOTE_VALUE = "noteValue";
 
 
-    public static final String CREATED_BY = "createdBy";
+    public static final String MODERATORS = "moderators";
 
 }

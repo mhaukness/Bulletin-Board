@@ -14,7 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import application.DataDownload.ParseKeywords;
 
@@ -25,6 +27,7 @@ import application.DataDownload.ParseKeywords;
  */
 @ParseClassName(ParseKeywords.BOARD_CLASS)
 public class BulletinBoard extends ParseObject {
+    private boolean isPersonalBoard;
 
 
     /**
@@ -40,15 +43,29 @@ public class BulletinBoard extends ParseObject {
      */
     public BulletinBoard(String name) {
         super();
-        ParseUser currUser = ParseUser.getCurrentUser();
-        if (currUser == null) {
-            // A personal board is being created
-        } else {
-            ParseRelation<ParseObject> relation = this.getRelation(ParseKeywords.CREATED_BY);
-            relation.add(currUser);
-        }
         this.put(ParseKeywords.BOARD_NAME, name);
         this.put(ParseKeywords.BOARD_NOTE_ARRAY, new ArrayList<Note>());
+    }
+
+
+    public static BulletinBoard createPersonalBoard(String name) {
+        BulletinBoard board = new BulletinBoard(name);
+        board.setPersonalBoard(true);
+        return board;
+    }
+
+
+    public static BulletinBoard createGroupBoard(String name) {
+        BulletinBoard board = new BulletinBoard(name);
+        ParseUser currUser = ParseUser.getCurrentUser();
+        ParseRelation<ParseObject> relation = board.getRelation(ParseKeywords.MODERATORS);
+        relation.add(currUser);
+        try {
+            board.save();
+        } catch (ParseException e) {
+            Log.e("ERROR", e.getMessage(), e);
+        }
+        return board;
     }
 
 
@@ -79,11 +96,14 @@ public class BulletinBoard extends ParseObject {
      *  Parse.com
      * @return The creator of the board
      */
-    public ParseUser getCreatedBy() {
-        ParseRelation<ParseUser> createdByRelation = this.getRelation(ParseKeywords.CREATED_BY);
-        ParseQuery query = createdByRelation.getQuery();
+    public List<ParseUser> getModerators() {
+        if (this.isPersonalBoard) {
+            return new ArrayList<ParseUser>();
+        }
+        ParseRelation<ParseUser> moderatorRelation = this.getRelation(ParseKeywords.MODERATORS);
+        ParseQuery query = moderatorRelation.getQuery();
         try {
-            return (ParseUser) query.getFirst();
+            return query.find();
         } catch (ParseException e) {
             Log.e("ERROR", e.getMessage(), e);
             return null;
@@ -138,7 +158,7 @@ public class BulletinBoard extends ParseObject {
      * @throws JSONException
      */
     public static BulletinBoard createFromJSON(JSONObject jsonBoard) throws JSONException {
-        BulletinBoard board = new BulletinBoard(jsonBoard.getString(ParseKeywords.BOARD_NAME));
+        BulletinBoard board = BulletinBoard.createPersonalBoard(jsonBoard.getString(ParseKeywords.BOARD_NAME));
         JSONArray noteArray = jsonBoard.getJSONArray(ParseKeywords.BOARD_NOTE_ARRAY);
         for (int i = 0; i < noteArray.length(); ++i) {
             Note note = Note.createFromJSON(noteArray.getJSONObject(i));
@@ -218,5 +238,9 @@ public class BulletinBoard extends ParseObject {
             sb.append(notes.get(i).toString());
         }
         return sb.toString();
+    }
+
+    public void setPersonalBoard(boolean personalBoard) {
+        this.isPersonalBoard = personalBoard;
     }
 }
