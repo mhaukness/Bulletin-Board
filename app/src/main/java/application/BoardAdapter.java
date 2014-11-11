@@ -68,6 +68,7 @@ public class BoardAdapter extends ArrayAdapter<Note> {
         convertView.setBackgroundColor(this.getContext().getResources().getColor(R.color.white));
 
         this.setNoteClickListener(viewHolder);
+        this.setNoteLongClickListener(viewHolder);
         this.setTags(viewHolder, convertView, position);
         viewHolder.text.setText(this.board.getNote(position).getText());
 
@@ -103,6 +104,11 @@ public class BoardAdapter extends ArrayAdapter<Note> {
         viewHolder.text.setOnClickListener(clickListener);
         viewHolder.deleteButton.setOnClickListener(clickListener);
         viewHolder.editButton.setOnClickListener(clickListener);
+    }
+
+    private void setNoteLongClickListener(ViewHolder viewHolder){
+        NoteLongClickListener longClick = new NoteLongClickListener(this.activity, this.context);
+        viewHolder.text.setOnLongClickListener(longClick);
     }
 
 

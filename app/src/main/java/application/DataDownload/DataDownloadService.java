@@ -51,6 +51,8 @@ public class DataDownloadService extends IntentService {
      */
     public static final String SAVE_FLAG = "save";
 
+    public static final String DELETE_FLAG = "delete";
+
 
     /**
      * A flag added to the intent that calls this service that indicates that the service should
@@ -98,6 +100,15 @@ public class DataDownloadService extends IntentService {
                 receiver.send(LOAD_FAILED, bundle);
                 Log.e("ERROR", e.getMessage(), e);
             }
+        } else if (intent.getBooleanExtra(DELETE_FLAG, false)){
+            BulletinBoard boardToDel = BoardHolderSingleton.getBoardHolder().getBoardToDelete();
+            try{
+                this.delete(boardToDel);
+                receiver.send(SAVE_FINISHED, bundle);
+            }catch (ParseException e){
+                receiver.send(SAVE_FAILED, bundle);
+                Log.e("ERROR", e.getMessage(), e);
+            }
         }
         this.stopSelf();
     }
@@ -137,5 +148,9 @@ public class DataDownloadService extends IntentService {
                 board.saveInBackground();
             }
         }
+    }
+
+    public void delete(BulletinBoard board) throws ParseException {
+        board.deleteInBackground();
     }
 }

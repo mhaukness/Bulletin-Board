@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id = "@+id/no_notification"
+        android:title = "No Notification"
+        />
+    <item
+        android:id = "@+id/one_minute"
+        android:title = "1 Minute"
+        />
+    <item
+        android:id = "@+id/five_minutes"
+        android:title = "5 Minutes"
+        />
+    <item
+        android:id = "@+id/half_hour"
+        android:title = "30 Minutes"
+        />
+    <item
+        android:id = "@+id/hour"
+        android:title = "1 Hour"
+        />
+    <item
+        android:id = "@+id/two_hours"
+        android:title = "2 Hours"
+        />
+    <item
+        android:id = "@+id/six_hours"
+        android:title = "6 Hours"
+        />
+    <item
+        android:id = "@+id/twelve_hours"
+        android:title = "12 Hours"
+        />
+    <item
+        android:id = "@+id/one_day"
+        android:title = "1 Day"
+        />
+    <item
+        android:id = "@+id/two_days"
+        android:title = "2 Days"
+        />
+    <item
+        android:id = "@+id/five_days"
+        android:title = "5 Days"
+        />
+
+
+</menu>

@@ -59,8 +59,9 @@ public abstract class BoardController extends Activity implements NoteModifier, 
                 case R.id.create_note:
                     createNote();
                     break;
-                case R.id.create_board:
-                    createNewBoard();
+                case R.id.remove_board:
+
+                    removeBoard();
                     break;
             }
         }
@@ -91,6 +92,17 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         Intent i = new Intent(this, CreateBoard.class);
         i.putExtra(BoardController.NEW_BOARD_FLAG, true);
         startActivity(i);
+    }
+
+    public void removeBoard() {
+        this.boards.remove(currentBoard);
+        BoardHolderSingleton.getBoardHolder().setBoards(this.boards);
+        BoardHolderSingleton.getBoardHolder().setBoardToDelete(currentBoard);
+        Intent serviceIntent = new Intent(this, DataDownloadService.class);
+        serviceIntent.putExtra(DataDownloadReceiver.RECEIVER_FLAG, mReceiver);
+        serviceIntent.putExtra(DataDownloadService.DELETE_FLAG, true);
+        this.startService(serviceIntent);
+        super.finish();
     }
     //endregion
 
@@ -170,6 +182,8 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         ft.hide(fm.findFragmentById(R.id.edit_fragment));
         ft.commit();
     }
+
+
     // endregion
 
 
@@ -259,6 +273,8 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         ListView noteList = (ListView) findViewById(R.id.note_listview);
         noteList.setAdapter(boardAdapter);
         Button addNote = (Button) findViewById(R.id.create_note);
+        Button delNote = (Button) findViewById(R.id.remove_board);
+        delNote.setOnClickListener(this.buttonClickListener);
         addNote.setOnClickListener(this.buttonClickListener);
     }
 
