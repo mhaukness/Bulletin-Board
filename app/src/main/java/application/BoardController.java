@@ -1,6 +1,7 @@
 package application;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -32,11 +33,12 @@ import application.model.Note;
  *  variables so that it is easy to find what the developer needs quickly.
  */
 public abstract class BoardController extends Activity implements NoteModifier, DataReceiver,
-        FragmentCallback {
+        FragmentCallback, ConfirmDelete.DeleteDialogListener {
 
     //region UI Elements
     private EditText newNoteText;
     private Note noteToEdit;
+    private Note noteToDelete;
     //endregion
 
 
@@ -119,6 +121,15 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         this.boardAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Removes a note from the board and redraws the list of notes.
+     * @param n The note to remove
+     */
+    public void removeNote(Note n) {
+        this.currentBoard.removeNote(n);
+        this.boardAdapter.notifyDataSetChanged();
+    }
+
 
     /**
      * Begin editing a note by displaying {@link application.EditFragment}.
@@ -171,6 +182,33 @@ public abstract class BoardController extends Activity implements NoteModifier, 
         ft.commit();
     }
     // endregion
+
+    // region Confirm Delete
+    public void showDeleteDialog(int index) {
+        // Create an instance of the dialog fragment and show it
+        this.noteToDelete = this.currentBoard.getNote(index);
+        this.noteToDelete.setBeingDeleted(true);
+
+        DialogFragment dialog = new ConfirmDelete();
+        dialog.show(getFragmentManager(), "ConfirmDelete");
+    }
+
+
+    // User confirmed the deletion
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        this.removeNote(this.noteToDelete);
+        this.noteToDelete.setBeingDeleted(false);
+        noteToDelete = null;
+        this.boardAdapter.notifyDataSetChanged();
+
+    }
+
+    // User cancelled the deletion
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+
+    }
 
 
     //region Data Integrity
@@ -300,6 +338,11 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     }
     //endregion
 
+
+
+
+
+    // endregion
 
     // region Action Bar
     /**
