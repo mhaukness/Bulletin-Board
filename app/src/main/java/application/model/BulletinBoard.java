@@ -100,6 +100,16 @@ public class BulletinBoard extends ParseObject {
         this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
     }
 
+    /**
+     * Removes a given note n from the board
+     * @param n
+     */
+    public void removeNote(Note n) {
+        List<Note> notes = this.getAllNotes();
+        notes.remove(n);
+        this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
+    }
+
 
     /**
      *

@@ -21,7 +21,7 @@
     <Button
         android:id="@+id/edit_button"
         android:layout_width="0dp"
-        android:layout_weight=".20"
+        android:layout_weight=".3"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/element_margin"
         android:layout_marginLeft="@dimen/element_margin"

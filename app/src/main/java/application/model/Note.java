@@ -21,6 +21,7 @@ public class Note extends ParseObject {
      *  edited in the application.
      */
     private boolean isBeingEdited = false;
+    private boolean isBeingDeleted = false;
 
 
     /**
@@ -75,6 +76,14 @@ public class Note extends ParseObject {
         return this.isBeingEdited;
     }
 
+    /**
+     * @return Whether or not this note is being deleted
+     */
+    public boolean isBeingDeleted() {
+        return this.isBeingDeleted;
+    }
+
+
 
     /**
      * Sets the edit status of this note.
@@ -82,6 +91,14 @@ public class Note extends ParseObject {
      */
     public void setBeingEdited(boolean newEditStatus) {
         this.isBeingEdited = newEditStatus;
+    }
+
+    /**
+     * Sets the delete status of this note.
+     * @param newDeleteStatus Whether or not the note is currently being edited
+     */
+    public void setBeingDeleted(boolean newDeleteStatus) {
+        this.isBeingDeleted = newDeleteStatus;
     }
 
 

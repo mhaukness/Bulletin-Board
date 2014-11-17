@@ -14,8 +14,10 @@ import android.widget.EditText;
  * This class contains the definition of the fragment that is used for editing the text of notes.
  */
 public class EditFragment extends Fragment {
+
     private EditText noteText;
     private FragmentCallback activity;
+
     private final View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
