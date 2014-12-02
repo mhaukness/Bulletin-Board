@@ -1,2 +1,9 @@
-app/build/
-build/
+local.properties
+/app/build/*
+/build/*
+/.gradle/*
+/facebook-sdk/facebook/build/*
+/ParseLoginUI/build/*
+
+
+
