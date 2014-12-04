@@ -8,12 +8,17 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
+import android.view.ActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import java.util.List;
@@ -51,6 +56,7 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     //region Controller Elements
     protected BoardAdapter boardAdapter;
     protected DataDownloadReceiver mReceiver;
+    private ActionProvider mActionProvider;
     /**
      * Click listener for the buttons on the main screen
      */
@@ -357,14 +363,20 @@ public abstract class BoardController extends Activity implements NoteModifier, 
             return false;
         }
         getMenuInflater().inflate(R.menu.main_screen, menu);
+
+        SubMenu submenu = menu.addSubMenu(0, Menu.NONE, 1, "Switch Boards").setIcon(R.drawable.board_list_icon);
+
         final int NEW_MENU_ID = Menu.FIRST + 1;
         if (this.boards != null) {
             for (int i = 0; i < this.boards.size(); ++i) {
-                menu.add(Menu.NONE, NEW_MENU_ID + i, i, this.boards.get(i).getBoardName());
+                submenu.add(Menu.NONE, NEW_MENU_ID + i, i, this.boards.get(i).getBoardName());
             }
         }
+
         return true;
+
     }
+
 
 
     /**

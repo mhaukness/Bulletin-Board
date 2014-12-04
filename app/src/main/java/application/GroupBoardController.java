@@ -29,6 +29,7 @@ public class GroupBoardController extends BoardController {
             mReceiver.setReceiver(this);
             BoardHolderSingleton.getBoardHolder().setBoardToSave(this.currentBoard);
             serviceIntent.putExtra(DataDownloadService.SAVE_FLAG, true);
+            serviceIntent.putExtra(DataDownloadReceiver.RECEIVER_FLAG, mReceiver);
             this.startService(serviceIntent);
         }
     }

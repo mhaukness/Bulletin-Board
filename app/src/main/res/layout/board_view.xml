@@ -15,14 +15,14 @@
         android:layout_marginBottom="@dimen/element_margin"
         android:id="@+id/new_note_text"
         android:hint="Start typing a note!"
-        android:textSize="32sp"/>
+        android:textSize="28sp"/>
 
 
     <Button
         android:id="@+id/create_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create New Note"/>
+        android:text="Save Note"/>
 
 
     <fragment

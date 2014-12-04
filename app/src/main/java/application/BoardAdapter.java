@@ -17,6 +17,7 @@ import application.model.Note;
  * This class is used to display a board on the screen
  */
 public class BoardAdapter extends ArrayAdapter<Note> {
+
     private final Context context;
     private BulletinBoard board;
     private final NoteModifier editActivity;
