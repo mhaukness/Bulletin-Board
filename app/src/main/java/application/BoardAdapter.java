@@ -1,5 +1,7 @@
 package application;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -46,6 +48,8 @@ public class BoardAdapter extends ArrayAdapter<Note> {
     }
 
 
+
+
     /**
      * Gets the row view for the given position
      * @param position The current position
@@ -68,9 +72,9 @@ public class BoardAdapter extends ArrayAdapter<Note> {
         convertView.setBackgroundColor(this.getContext().getResources().getColor(R.color.white));
 
         this.setNoteClickListener(viewHolder);
-        this.setNoteLongClickListener(viewHolder);
         this.setTags(viewHolder, convertView, position);
         viewHolder.text.setText(this.board.getNote(position).getText());
+        this.setNoteLongClickListener(viewHolder);
 
         Resources resources = this.getContext().getResources();
         if (this.getItem(position).isBeingEdited()) {
@@ -107,7 +111,8 @@ public class BoardAdapter extends ArrayAdapter<Note> {
     }
 
     private void setNoteLongClickListener(ViewHolder viewHolder){
-        NoteLongClickListener longClick = new NoteLongClickListener(this.activity, this.context);
+        NoteLongClickListener longClick = new NoteLongClickListener(this.activity, this.context, viewHolder.text);
+        CharSequence dum = viewHolder.text.getText();
         viewHolder.text.setOnLongClickListener(longClick);
     }
 
