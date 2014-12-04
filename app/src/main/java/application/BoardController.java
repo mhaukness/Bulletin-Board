@@ -62,8 +62,8 @@ public abstract class BoardController extends Activity implements NoteModifier, 
                     createNote();
                     break;
                 case R.id.remove_board:
-
                     removeBoard();
+
                     break;
             }
         }
