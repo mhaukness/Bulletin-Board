@@ -19,7 +19,8 @@ import application.model.Note;
 public class BoardAdapter extends ArrayAdapter<Note> {
     private final Context context;
     private BulletinBoard board;
-    private final NoteModifier activity;
+    private final NoteModifier editActivity;
+    private final ConfirmDelete.DeleteDialogListener deleteActivity;
 
 
     /**
@@ -32,7 +33,8 @@ public class BoardAdapter extends ArrayAdapter<Note> {
         super(context, resource);
         this.context = context;
         this.board = board;
-        this.activity = (NoteModifier) context;
+        this.editActivity = (NoteModifier) context;
+        this.deleteActivity = (ConfirmDelete.DeleteDialogListener) context;
     }
 
 
@@ -100,7 +102,7 @@ public class BoardAdapter extends ArrayAdapter<Note> {
      * @param viewHolder The holder to assign a click listener to
      */
     private void setNoteClickListener(ViewHolder viewHolder) {
-        NoteClickListener clickListener = new NoteClickListener(this.activity);
+        NoteClickListener clickListener = new NoteClickListener(this.editActivity, this.deleteActivity);
         viewHolder.text.setOnClickListener(clickListener);
         viewHolder.deleteButton.setOnClickListener(clickListener);
         viewHolder.editButton.setOnClickListener(clickListener);

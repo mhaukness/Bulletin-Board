@@ -6,11 +6,13 @@ import android.view.View;
  * Created by alobb on 10/9/14.
  */
 public class NoteClickListener implements View.OnClickListener {
-    private NoteModifier activity;
 
+    private NoteModifier editActivity;
+    private ConfirmDelete.DeleteDialogListener deleteActivity;
 
-    public NoteClickListener(NoteModifier activity) {
-        this.activity = activity;
+    public NoteClickListener(NoteModifier activity1, ConfirmDelete.DeleteDialogListener activity2) {
+        this.editActivity = activity1;
+        this.deleteActivity = activity2;
     }
 
     @Override
@@ -18,10 +20,11 @@ public class NoteClickListener implements View.OnClickListener {
         Integer index = (Integer) v.getTag();
         switch (v.getId()) {
             case R.id.edit_button:
-                activity.startEditNote(index);
+                editActivity.startEditNote(index);
                 break;
             case R.id.delete_button:
-                activity.removeNote(index);
+
+                deleteActivity.showDeleteDialog(index);
                 break;
         }
     }

@@ -24,13 +24,12 @@
         android:hint="Start typing a note!"
         android:textSize="32sp"/>
 
-    <!-- Set OnClickListener to trigger results when pressed -->
+
     <Button
         android:id="@+id/create_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create New Note"/>
-
 
 
     <fragment
