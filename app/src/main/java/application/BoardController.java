@@ -34,12 +34,15 @@ import application.model.Note;
  *  variables so that it is easy to find what the developer needs quickly.
  */
 public abstract class BoardController extends Activity implements NoteModifier, DataReceiver,
-        FragmentCallback, ConfirmDelete.DeleteDialogListener {
+        FragmentCallback, ConfirmDelete.DeleteDialogListener,
+        ConfirmDeleteBoard.DeleteDialogListener {
 
     //region UI Elements
     private EditText newNoteText;
     private Note noteToEdit;
     private Note noteToDelete;
+    private BulletinBoard boardToDelete;
+    //private ConfirmDeleteBoard.DeleteDialogListener deleteActivity;
     //endregion
 
 
@@ -63,8 +66,8 @@ public abstract class BoardController extends Activity implements NoteModifier, 
                     createNote();
                     break;
                 case R.id.remove_board:
-                    removeBoard();
-
+                    showDeleteBoardDialog();
+                    //removeBoard();
                     break;
             }
         }
@@ -212,17 +215,30 @@ public abstract class BoardController extends Activity implements NoteModifier, 
     // User confirmed the deletion
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        this.removeNote(this.noteToDelete);
-        this.noteToDelete.setBeingDeleted(false);
-        noteToDelete = null;
-        this.boardAdapter.notifyDataSetChanged();
-
+        if (noteToDelete != null) {
+            this.removeNote(this.noteToDelete);
+            this.noteToDelete.setBeingDeleted(false);
+            noteToDelete = null;
+            this.boardAdapter.notifyDataSetChanged();
+        } else if (boardToDelete != null) {
+            removeBoard();
+        }
     }
 
     // User cancelled the deletion
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
 
+    }
+
+
+    public void showDeleteBoardDialog() {
+        // Create an instance of the dialog fragment and show it
+        this.boardToDelete = this.currentBoard;
+        //this.noteToDelete.setBeingDeleted(true);
+
+        DialogFragment dialog = new ConfirmDeleteBoard();
+        dialog.show(getFragmentManager(), "ConfirmDeleteBoard");
     }
 
 

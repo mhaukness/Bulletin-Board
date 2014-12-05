@@ -23,7 +23,6 @@ public class NoteClickListener implements View.OnClickListener {
                 editActivity.startEditNote(index);
                 break;
             case R.id.delete_button:
-
                 deleteActivity.showDeleteDialog(index);
                 break;
         }
