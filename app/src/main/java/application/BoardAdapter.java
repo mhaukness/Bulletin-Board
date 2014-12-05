@@ -113,7 +113,7 @@ public class BoardAdapter extends ArrayAdapter<Note> {
     }
 
     private void setNoteLongClickListener(ViewHolder viewHolder){
-        NoteLongClickListener longClick = new NoteLongClickListener(this.activity, this.context, viewHolder.text);
+        NoteLongClickListener longClick = new NoteLongClickListener(this.editActivity, this.context, viewHolder.text);
         CharSequence dum = viewHolder.text.getText();
         viewHolder.text.setOnLongClickListener(longClick);
     }
