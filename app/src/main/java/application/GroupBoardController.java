@@ -80,7 +80,9 @@ public class GroupBoardController extends BoardController {
      * @param resultCode The code sent by {@link application.DataDownload.DataDownloadService}
      * @param data The bundle sent by {@link application.DataDownload.DataDownloadService}
      */
-    @Override
+   // @Override
+
+    /*
     public void onReceiveResult(int resultCode, Bundle data) {
         super.onReceiveResult(resultCode, data);
         for (int i = 0; i < this.boards.size(); ++i) {
@@ -91,4 +93,5 @@ public class GroupBoardController extends BoardController {
             }
         }
     }
+    */
 }

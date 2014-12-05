@@ -20,12 +20,10 @@ import application.DataDownload.ParseKeywords;
 @ParseClassName(ParseKeywords.BOARD_CLASS)
 public class BulletinBoard extends ParseObject {
 
-
     /**
      * Required for ParseObject subclass; nothing needs to happen here.
      */
     public BulletinBoard() {}
-
 
     /**
      * Creates a new Bulletin Board.  Note that this does not save the board to Parse or the device;
@@ -38,7 +36,6 @@ public class BulletinBoard extends ParseObject {
         this.put(ParseKeywords.BOARD_NOTE_ARRAY, new ArrayList<Note>());
     }
 
-
     /**
      * Add a note to the board at the beginning of the board (The beginning is the most chronologically
      *  recent).
@@ -50,7 +47,6 @@ public class BulletinBoard extends ParseObject {
         this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
     }
 
-
     /**
      * @param index The index of the note to get
      * @return A {@link application.model.Note Note}
@@ -59,15 +55,12 @@ public class BulletinBoard extends ParseObject {
         return this.getNoteArray().get(index);
     }
 
-
-
     /**
      * @return The name of the board
      */
     public String getBoardName() {
         return this.getString(ParseKeywords.BOARD_NAME);
     }
-
 
     /**
      *
@@ -76,7 +69,6 @@ public class BulletinBoard extends ParseObject {
     public List<Note> getAllNotes() {
         return this.getNoteArray();
     }
-
 
     /**
      *
@@ -88,7 +80,6 @@ public class BulletinBoard extends ParseObject {
         }
         return this.getNoteArray().size();
     }
-
 
     /**
      *
@@ -110,7 +101,6 @@ public class BulletinBoard extends ParseObject {
         this.put(ParseKeywords.BOARD_NOTE_ARRAY, notes);
     }
 
-
     /**
      *
      * @param jsonBoard
@@ -126,7 +116,6 @@ public class BulletinBoard extends ParseObject {
         }
         return board;
     }
-
 
     /**
      *
@@ -146,7 +135,6 @@ public class BulletinBoard extends ParseObject {
         personalBoard.put(ParseKeywords.BOARD_NAME, currentBoard.getBoardName());
         return personalBoard;
     }
-
 
     @Override
     public boolean equals(Object other) {
@@ -170,7 +158,6 @@ public class BulletinBoard extends ParseObject {
                (this.getUpdatedAt().compareTo(otherBoard.getUpdatedAt()) == 0);
     }
 
-
     /**
      *
      * @return
@@ -178,7 +165,6 @@ public class BulletinBoard extends ParseObject {
     private List<Note> getNoteArray() {
         return (ArrayList<Note>) this.get(ParseKeywords.BOARD_NOTE_ARRAY);
     }
-
 
     /**
      *
