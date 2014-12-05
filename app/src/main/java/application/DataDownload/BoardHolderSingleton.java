@@ -36,6 +36,8 @@ public class BoardHolderSingleton {
      */
     private volatile BulletinBoard boardToSave;
 
+    private volatile BulletinBoard boardToDelete;
+
 
     /**
      * A private constructor that is only called if the singleton object is equal to null.
@@ -78,6 +80,8 @@ public class BoardHolderSingleton {
         return boardToSave;
     }
 
+    public BulletinBoard getBoardToDelete(){return boardToDelete;}
+
 
     /**
      * Sets the boars that needs to be saved by {@link application.DataDownload.DataDownloadService}
@@ -86,4 +90,6 @@ public class BoardHolderSingleton {
     public void setBoardToSave(BulletinBoard boardToSave) {
         this.boardToSave = boardToSave;
     }
+
+    public void setBoardToDelete(BulletinBoard board){ this.boardToDelete = board;}
 }
