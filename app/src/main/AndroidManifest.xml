@@ -5,8 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".App"
@@ -20,6 +18,7 @@
             android:name=".PersonalBoardController"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,12 +31,14 @@
             android:name=".GroupBoardController"
             android:label="GroupBoardController"
             android:parentActivityName=".PersonalBoardController"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <activity android:name=".CreateBoard"
             android:label="CreateBoard"
             android:launchMode="singleTop"
             android:parentActivityName=".PersonalBoardController"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"/>
 
 

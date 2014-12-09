@@ -25,14 +25,16 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/element_margin"
         android:layout_marginLeft="@dimen/element_margin"
-        android:text="@string/note_edit_button"/>
+        android:text="@string/note_edit_button"
+        android:textSize="16sp"/>
 
     <Button
         android:id="@+id/delete_button"
-        android:layout_weight=".15"
+        android:layout_weight=".16"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/element_margin"
-        android:text="@string/note_delete_button" />
+        android:text="@string/note_delete_button"
+        android:textSize="16sp"/>
 
 </LinearLayout>

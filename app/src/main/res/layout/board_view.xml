@@ -9,12 +9,7 @@
     android:orientation="vertical"
     tools:context=".MainScreen">
 
-    <Button
-        android:id="@+id/remove_board"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="Remove Board"/>
+
 
     <EditText
         android:layout_width="wrap_content"
@@ -24,12 +19,28 @@
         android:hint="Start typing a note!"
         android:textSize="32sp"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/create_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create New Note"/>
+        <Button
+            android:id="@+id/create_note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create New Note"
+            android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/remove_board"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Remove Board"
+            android:textSize="16sp"/>
+
+
+    </LinearLayout>
+
 
 
     <fragment
@@ -45,5 +56,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="20dp" />
+
+
 
 </LinearLayout>
