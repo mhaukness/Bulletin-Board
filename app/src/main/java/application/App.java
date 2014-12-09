@@ -16,12 +16,12 @@ public class App extends Application {
     /**
      * The application ID used in Parse.com for the Bulletin Board project.
      */
-    private static final String APPLICATION_ID = "zLVIHD2pn243N9DhZFqDGXQrYRtqpjOqUCq1nKqq";
+    private static final String APPLICATION_ID = "";
 
     /**
      * The client key used by Android for Parse.com
      */
-    private static final String CLIENT_KEY = "IrVmsoQqhycibo4TNGGG36vZ8k9rrorWoaZpsdCU";
+    private static final String CLIENT_KEY = "";
 
 
     /**
