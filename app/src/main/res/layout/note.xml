@@ -19,6 +19,7 @@
         android:id="@+id/note_textview"/>
 
     <Button
+        android:background="@drawable/boring_button"
         android:id="@+id/edit_button"
         android:layout_width="0dp"
         android:layout_weight=".3"
@@ -26,15 +27,18 @@
         android:layout_marginRight="@dimen/element_margin"
         android:layout_marginLeft="@dimen/element_margin"
         android:text="@string/note_edit_button"
-        android:textSize="16sp"/>
+        android:textSize="12sp"
+        style="@style/button_text"/>
 
     <Button
+        android:background="@drawable/boring_button"
         android:id="@+id/delete_button"
         android:layout_weight=".16"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/element_margin"
         android:text="@string/note_delete_button"
-        android:textSize="16sp"/>
+        android:textSize="12sp"
+        style="@style/button_text"/>
 
 </LinearLayout>

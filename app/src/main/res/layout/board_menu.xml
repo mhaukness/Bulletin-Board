@@ -14,9 +14,11 @@
         android:hint="New board's name" />
 
     <Button
+        android:background="@drawable/boring_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/create_board"
-        android:text="Create New Board"/>
+        android:text="Create New Board"
+        style="@style/button_text"/>
 
 </LinearLayout>

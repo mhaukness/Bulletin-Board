@@ -17,26 +17,29 @@
         android:layout_marginBottom="@dimen/element_margin"
         android:id="@+id/new_note_text"
         android:hint="Start typing a note!"
-        android:textSize="32sp"/>
+        android:textSize="26sp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <Button
+            android:background="@drawable/boring_button"
             android:id="@+id/create_note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create New Note"
-            android:textSize="16sp"/>
+            android:text="Save Note"
+            android:textSize="16sp"
+            style="@style/button_text"/>
 
         <Button
+            android:background="@drawable/boring_button"
             android:id="@+id/remove_board"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:text="Remove Board"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            style="@style/button_text"/>
 
 
     </LinearLayout>

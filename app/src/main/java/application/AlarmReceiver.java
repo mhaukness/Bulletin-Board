@@ -26,7 +26,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Notification notif = new Notification.Builder(context)
                 .setContentTitle("BulletinBoard Reminder!")
                 .setContentText(NoteLongClickListener.getCurrent())
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.logo_3)
                 .setContentIntent(result)
                 .build();
         NotificationManager mannotif = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
